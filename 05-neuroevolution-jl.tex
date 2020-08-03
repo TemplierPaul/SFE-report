@@ -1,0 +1,38 @@
+\chapter{Developping NeuroEvolution.jl}
+\label{sec:neuroevo}
+
+\hrefhttps://github.com/TemplierPaul/NeuroEvolution.jl{}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms
+
+\section{NEAT implementation}
+
+I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \href{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{
+\color{blue}{his website}}. \\
+The \href{https://github.com/FernandoTorres/NEAT}{\color{blue}{reorganized version}} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.   
+
+\subsection{NEAT Individual}
+
+\subsection{Neuron position and Execution order}
+This implementation of NEAT was inspired by the work of \cite{wilson2018positionalcgp} in which the position of a CGP node is described as a floating point value. This representation is here used to determine the order of computation of neuron output values, hence defining the architecture.  
+
+The positions are defined as follows:
+\begin{itemize}
+    \item All input neurons are placed with negative integer positions.  
+    \item The bias neuron (constant equal to 1) is placed at $0$.  
+    \item All output neurons are placed at positive integer positions, starting at $1$.
+    \item All other neurons are placed with positions in $]0, 1[$.
+\end{itemize}
+
+Neurons added through mutation of a connection are placed at a random position between the origin node of the connection at $p_o$ and the destination node at $p_d$, so that the order of execution is not modified. \\
+The position of the new neuron is therefore randomly drawn in $]p_o, p_d[ \: \cap \: ]0, 1[$.
+
+
+
+
+\section{Adding HyperNEAT}
+
+\section{CMA-ES applied to neuroevolution}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "isae-report-template"
+%%% End: 

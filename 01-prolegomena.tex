@@ -1,0 +1,58 @@
+\chapter{Prolegomena}
+\label{sec:prolegomena}
+
+\section{Reinforcement Learning: what is an MDP?}
+      
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+
+  \node[draw] (A) at (0cm,0cm) {State s};
+  \node[draw] (B) at (3cm,1.5cm) {State s'};
+  \node[draw] (C) at (3cm,-1.5cm) {State s''};
+  
+  \node[draw,fill=yellow] (Arga) at (1.5cm,2.5cm) {Action a'};
+  \node[draw,fill=yellow] (Argb) at (1.5cm,-2.5cm) {Action a''};
+  
+  \draw node[vertex] (Jointa) at (1.5cm,0.75cm) {};
+  \draw node[vertex] (Jointb) at (1.5cm, -0.75cm) {};
+  
+  \draw[->,draw=blue] (A) to (B);
+  \draw[->,draw=blue] (A) to (C);
+  
+  \draw[-,draw=black] (Arga) to (Jointa);
+  \draw[-,draw=black] (Argb) to (Jointb);
+  
+  \end{tikzpicture}
+  
+    \caption{Markov Decision Process}
+    \label{fig:my_label}
+\end{figure}
+
+
+\section{Neural Networks acting as a policy}
+
+\section{Gradient-based optimization}
+
+\section{Evolutionary Reinforcement Learning}
+ERL is RL with evolutionary methods
+
+The ERL field lacks a comparison / benchmarking tool, which is why we did the DOTA 2 competition and we are working on BERL
+
+\section{Development tools}
+\subsection{Julia}
+Julia is a high-level, dynamic programming language designed for high-performance with a just-in-time compiler. It is notably interoperable with multiple languages, including C, Fortran, Python, R, MATLAB, Java, or Scala
+
+Test-Driven Development: translate requirements into tests, then develop until tests pass.
+
+We used Julia in this project to provide a faster environment than Python, while still being compatible with state-of-the-art Python libraries.
+
+\subsection{Cambrian}
+\href{https://github.com/d9w/Cambrian.jl}{\color{blue}{Cambrian.jl}} is an Evolutionary Computation framework developed in Julia by my supervisor Dennis Wilson. It implements a structure to facilitate the development of evolutionary algorithms, focusing on genetic programming and neuroevolution. 
+
+I used Cambrian in to provide a consistent framework between projects and ensure compatibility, and for its usefulness in structuring the development.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "isae-report-template"
+%%% End: 

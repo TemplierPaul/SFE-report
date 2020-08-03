@@ -92,6 +92,7 @@ urlcolor=black}
 \usepackage{bm}
 \usepackage{multirow}
 \usepackage[footnote]{acronym}
+\usepackage{float}
 
 \newcommand*{\SET}[1]  {\ensuremath{\mathbf{#1}}}
 \newcommand*{\VEC}[1]  {\ensuremath{\boldsymbol{#1}}}
@@ -181,13 +182,13 @@ urlcolor=black}
 
 \includegraphics[width=0.6\textwidth]{logo-isae-supaero}\\[1cm]
 
-{\large Research Master Internship}\\[0.5cm]
+{\large Research Master Internship Report}\\[0.5cm]
 
 {\large 18/05/2020 - 27/11/2020}\\[0.5cm]
 
 % Title
 \rule{\linewidth}{0.5mm} \\[0.4cm]
-{ \huge \bfseries NeuroEvolution for Reinforcement Learning \\[0.4cm] }
+{ \huge \bfseries NeuroEvolution \\ for \\Reinforcement Learning \\[0.4cm] }
 \rule{\linewidth}{0.5mm} \\[1.5cm]
 
 % Author and supervisor
@@ -208,7 +209,7 @@ urlcolor=black}
 \vfill
 
 % Bottom of the page
-{\large v0.1\\ \today}
+{\large v0.1\\ \today \\ \textit{Note: This report being due for 21/08/2020, its content \\only accounts for half of the internship.}}
 
 \end{center}
 \end{titlepage}
@@ -253,13 +254,27 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 \listoffigures
 
 \chapter*{Acronyms}
-\begin{acronym}[CP-OFDMX] % Give the longest acronym here
-\acro{RL}{\emph{Reinforcement Learning}}
+\section*{Concepts}
+\begin{acronym}[HyperNEAT] % Give the longest acronym here
+\acro{MDP}{\emph{Markov Decision Process}}
 \acro{ML}{\emph{Machine Learning}}
-\acro{DL}{Deep Learning}
+\acro{RL}{\emph{Reinforcement Learning}}
+\acro{ERL}{\emph{Evolutionary Reinforcement Learning}}
+\acro{DL}{\emph{Deep Learning}}
+\acro{EC}{\emph{Evolutionary Computation}}
+\end{acronym}
+
+\section*{Algorithms}
+\begin{acronym}[HyperNEAT] % Give the longest acronym here
 \acro{NEAT}{\emph{NeuroEvolution of Augmenting Topologies}}
-\acro{BERL}{\emph{Benchmarking Evolutionary Reinforcement Learning (\href{https://github.com/d9w/BERL.jl}{GitHub})}}
+\acro{HyperNEAT}{\emph{Hypercube-based NEAT}}
 \acro{CGP}{\emph{Cartesian Genetic Programmin}}
+\acro{CMA-ES}{\emph{Covariance matrix adaptation evolution strategy}}
+\end{acronym}
+
+\section*{Specific acronyms}
+\begin{acronym}[HyperNEAT] % Give the longest acronym here
+\acro{BERL}{\emph{Benchmarking Evolutionary Reinforcement Learning (\href{https://github.com/d9w/BERL.jl}{GitHub})}}
 \end{acronym}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -304,11 +319,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 % Analyse
 
 \include{00-introduction}
-\include{01-machine-learning}
+\include{01-prolegomena}
 \include{02-evolutionary-algorithms}
 \include{03-Dota-competition}
-\include{04-neuroevolution-jl}
-\include{05-berl-jl}
+\include{04-berl-jl}
+\include{05-neuroevolution-jl}
+\include{06-Results}
 \include{99-conclusion}
 
 \appendix
