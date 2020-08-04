@@ -94,6 +94,8 @@ urlcolor=black}
 \usepackage[footnote]{acronym}
 \usepackage{float}
 
+\usepackage{indentfirst}
+
 % Add Julia code support
 \usepackage{listings}
 \usepackage{xcolor}
@@ -104,10 +106,11 @@ urlcolor=black}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinelanguage{Julia}%
-  {morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+  {keywords=[1]{abstract,break,case,catch,const,continue,do,else,elseif,%
       end,export,false,for,function,immutable,import,importall,if,in,%
       macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
-      using,while},%
+      using,while,mutable,struct},%
+   keywords=[2]{Int64,Float64,Function,Array,Dict,Network,NEATIndividual,NEATIndiv,Individual,Cambrian}
    sensitive=true,%
    alsoother={$},%
    morecomment=[l]\#,%
@@ -119,10 +122,11 @@ urlcolor=black}
 \lstset{%
     language         = Julia,
     basicstyle       = \ttfamily,
-    keywordstyle     = \bfseries\color{blue},
+    keywordstyle     = [1]\bfseries\color{red},
+    keywordstyle     = [2]\bfseries\color{blue},
     backgroundcolor  = \color{backcolour},
     stringstyle      = \color{codepurple},
-    commentstyle     = \color{codegreen},
+    commentstyle     = \color{codegray},
     showstringspaces = false,
     breaklines       = true,
     frame            = tblr,
@@ -243,7 +247,7 @@ urlcolor=black}
 \vfill
 
 % Bottom of the page
-{\large v0.1\\ \today \\ \textit{Note: This report being due for 21/08/2020, its content \\only accounts for half of the internship.}}
+{\large v0.1\\ \today \\ \textit{Note: This report being due for 21/08/2020, its content \\only accounts for half of the internship time.}}
 
 \end{center}
 \end{titlepage}
@@ -285,7 +289,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 \clearpage
 \tableofcontents
 
-\listoffigures
+\lstlistoflistings
 
 \chapter*{Acronyms}
 \section*{Concepts}

@@ -1,17 +1,39 @@
 \chapter{Developping NeuroEvolution.jl}
-\label{sec:neuroevo}
+\label{chap:neuroevo}
 
-\href{https://github.com/TemplierPaul/NeuroEvolution.jl}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. 
+\href{https://github.com/TemplierPaul/NeuroEvolution.jl}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NEuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is in progress to complete it. 
+
+The concepts powering the NEAT algorithm may seem relatively simple and clear as described in the literature, making it a quite elegant solution. \\
+However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it for an earlier \href{https://github.com/TemplierPaul/Genepy}{\color{blue}{personal project}},  and in the \href{https://github.com/d9w/NEAT.jl/tree/master/src}{\color{blue}{NEAT agent}} developed for the Breezy competition (cf chapter \ref{chap:dota}), helped design a more reliable structure and drastically reduced the development time.
+
+This chapter aims at presenting the choices made during the design and development of NeuroEvolution.jl, its architecture and the main principles ruling it. 
 
 \section{NEAT implementation}
-
 I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \href{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{
 \color{blue}{his website}}. \\
 The \href{https://github.com/FernandoTorres/NEAT}{\color{blue}{reorganized version}} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
 
 \subsection{NEAT Individual}
 
+Based on Cambrian.jl, NeuroEvolution.jl uses an abstract type $NEATIndiv$ from which the structure $NEATIndividual$ inherits. This allows to build new NEAT-like individuals using the same methods with additional features, like HyperNEAT which relies on the NEAT algorithm for evolution, but integrates a different evaluation procedure. $NEATIndiv$ inherits from $Cambrian.Individual$ to use Cambrian's architecture.
+
+A $NEATIndividual$ object contains a dictionary mapping an innovation number to a gene, which represents a connection between two neurons, a list of neurons defined by their positions, a dictionary mapping each neuron position to the activation function of the corresponding neuron, a $Network$ object containing the neural network built from the genome, and a list of the fitness of the individual as required by Cambrian.
+
+\begin{lstlisting}[language=Julia, caption=NEAT Individual (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/individual.jl}{\color{blue}{Source}})]
+abstract type NEATIndiv <: Cambrian.Individual end
+
+
+mutable struct NEATIndividual <: NEATIndiv
+    genes::Dict
+    fitness::Array{Float64}
+    neuron_pos::Array{Float64}
+    network::Network
+    activ_functions::Dict
+end
+\end{lstlisting}
+
 \subsection{Neuron position and Execution order}
+\label{subsec:NEAT_neur_pos}
 
 On of the main issues encountered when implementing NEAT in previous personal projects is the order of computation of the neurons. Due to the way it grows, the NEAT network can build recurrent connections, including bidirectional relationships with one connection from neuron A to neuron B, and one connection from B to A. Then, propagating depth from the output neurons to make sure all previous neuron values have been computed leads to an infinite loop between A and B, each one needing to be computed before the other. 
 
@@ -72,11 +94,32 @@ The parameters to run NEAT are defined in a \href{https://github.com/TemplierPau
 
 One of the available activation functions is randomly selected when a new neuron is created, allowing the implementation of a Compositional Pattern-Producing Network (CPPN) by making multiple ones available. The default activation function for NEAT is the sigmoid. 
 
+\subsection{Crossover and innovation number}
+Another delicate part of the implementation of NEAT lies in 
+
 \subsection{Speciation threshold}
 
+\subsection{NEAT in a standard Genetic Algorithm}
 
+The goal of using Cambrian as a framework in this implementation also was to allow for a high compatibility with other algorithm so that the coding blocks defined for NEAT could be reused in classical evolutionary algorithms, from a Genetic Algorithm (GA) to a Quality-Diversity method as envisioned in the Breezy competition (cf chapter \ref{chap:dota}). 
+
+Hence, I finally implemented a simple wrapper to use the NEAT Individual and its mutation and crossover operators in a standard Genetic Algorithm, ignoring the specific species-based evaluation.
+
+\begin{lstlisting}[language=Julia, caption=NEAT in a Genetic Algorithm (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}{\color{blue}{Source}})]
+function neat_ga_populate!(e::Evolution)
+    mut::Function=i::NEATIndiv -> 
+                    NeuroEvolution.mutate(i, e.cfg)
+    cross::Function=(p1, p2) -> 
+                    NeuroEvolution.crossover(p1, p2, e.cfg)
+    Cambrian.ga_populate!(e, mutation=mut, crossover=cross)
+end
+\end{lstlisting}
 
 \section{Adding HyperNEAT}
+HyperNEAT \cite{HyperNEAT} introduces indirect encoding by using a CPPN (Compositional Pattern-Producing Network \cite{CPPN}) to determine the weights of a neural network with a fix architecture. 
+
+Using HyperNEAT requires a \href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/hyperneat.yaml}{\color{blue}{specific YAML file}} which adds information about hidden layers and structure of the generated network to the standard NEAT parameters. 
+
 
 \section{CMA-ES applied to neuroevolution}
 
