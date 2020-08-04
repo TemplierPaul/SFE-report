@@ -1,20 +1,25 @@
 \chapter{Developping NeuroEvolution.jl}
 \label{sec:neuroevo}
 
-\hrefhttps://github.com/TemplierPaul/NeuroEvolution.jl{}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms
+\href{https://github.com/TemplierPaul/NeuroEvolution.jl}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. 
 
 \section{NEAT implementation}
 
 I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \href{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{
 \color{blue}{his website}}. \\
-The \href{https://github.com/FernandoTorres/NEAT}{\color{blue}{reorganized version}} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.   
+The \href{https://github.com/FernandoTorres/NEAT}{\color{blue}{reorganized version}} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
 
 \subsection{NEAT Individual}
 
 \subsection{Neuron position and Execution order}
-This implementation of NEAT was inspired by the work of \cite{wilson2018positionalcgp} in which the position of a CGP node is described as a floating point value. This representation is here used to determine the order of computation of neuron output values, hence defining the architecture.  
 
-The positions are defined as follows:
+On of the main issues encountered when implementing NEAT in previous personal projects is the order of computation of the neurons. Due to the way it grows, the NEAT network can build recurrent connections, including bidirectional relationships with one connection from neuron A to neuron B, and one connection from B to A. Then, propagating depth from the output neurons to make sure all previous neuron values have been computed leads to an infinite loop between A and B, each one needing to be computed before the other. 
+
+To prevent that issue and reduce the time needed to build the network, this implementation of NEAT was inspired by the work of \cite{wilson2018positionalcgp} in which the position of a CGP node is described as a floating point value. The execution order is then available by design since they can be executed sequentially based on their positions. Recurrent connections are defined by destination neurons being before origins, which makes possible to allow or block them easily at mutation. 
+
+This representation also removes the propagation time concept, making the NEAT network closer to standard neural networks. 
+
+The position of a neuron is defined as follows:
 \begin{itemize}
     \item All input neurons are placed with negative integer positions.  
     \item The bias neuron (constant equal to 1) is placed at $0$.  
@@ -22,9 +27,52 @@ The positions are defined as follows:
     \item All other neurons are placed with positions in $]0, 1[$.
 \end{itemize}
 
+\begin{figure}[H]
+\centering
+\captionsetup{justification=centering,margin=2cm}
+\includegraphics[width=10cm]{images/NEAT_position.png}
+\caption{Example of NEAT individual as neurons defined by position and feed-forward connections, with 2 input features, 1 output neuron and 2 hidden neurons.}
+\includegraphics[width=10cm]{images/NEAT_network.png}
+\caption{Neural Network generated from the above individual.}
+ \label{NEAT_network}
+\end{figure}
+
 Neurons added through mutation of a connection are placed at a random position between the origin node of the connection at $p_o$ and the destination node at $p_d$, so that the order of execution is not modified. \\
 The position of the new neuron is therefore randomly drawn in $]p_o, p_d[ \: \cap \: ]0, 1[$.
 
+Because of this structure, and to avoid edge cases, connections between 2 output neurons are forbidden. Connections towards input and bias neurons are blocked too, since their values are fixed to the input vector and to 1 respectively.
+
+When computing the network's output, its neurons are sorted by ascending position. Since the position determines the neuron type, choosing the update type is simple:
+
+\begin{lstlisting}[language=Julia, caption=NEAT network processing (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/process.jl}{\color{blue}{Source}})]
+for p in indiv.neuron_pos
+    if p < 0 # Input neurons
+        indiv.network.neurons[p].output = 
+                    last_features[Int(-p)]
+    elseif p == 0 # Bias neuron
+        indiv.network.neurons[p].output = 1
+    else # Hidden and output neurons
+        compute!(indiv.network.neurons[p], 
+                    indiv.network.neurons)
+    end
+end
+\end{lstlisting}
+
+\subsection{Run configuration}
+
+The parameters to run NEAT are defined in a \href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/test.yaml}{\color{blue}{YAML file}}  that is read at runtime. It includes:
+
+\begin{itemize}
+    \item Cambrian settings: population size, number of generations
+    \item Input and output size of the network
+    \item Speciation parameters
+    \item Mutation probabilities for each mutation type
+    \item Available activation functions including sigmoid, trigonometric functions, absolute value, identity, or ReLU. 
+\end{itemize}
+
+One of the available activation functions is randomly selected when a new neuron is created, allowing the implementation of a Compositional Pattern-Producing Network (CPPN) by making multiple ones available. The default activation function for NEAT is the sigmoid. 
+
+\subsection{Speciation threshold}
 
 
 

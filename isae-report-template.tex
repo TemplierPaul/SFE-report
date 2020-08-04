@@ -94,6 +94,40 @@ urlcolor=black}
 \usepackage[footnote]{acronym}
 \usepackage{float}
 
+% Add Julia code support
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinelanguage{Julia}%
+  {morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+      end,export,false,for,function,immutable,import,importall,if,in,%
+      macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+      using,while},%
+   sensitive=true,%
+   alsoother={$},%
+   morecomment=[l]\#,%
+   morecomment=[n]{\#=}{=\#},%
+   morestring=[s]{"}{"},%
+   morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+    language         = Julia,
+    basicstyle       = \ttfamily,
+    keywordstyle     = \bfseries\color{blue},
+    backgroundcolor  = \color{backcolour},
+    stringstyle      = \color{codepurple},
+    commentstyle     = \color{codegreen},
+    showstringspaces = false,
+    breaklines       = true,
+    frame            = tblr,
+}
+
 \newcommand*{\SET}[1]  {\ensuremath{\mathbf{#1}}}
 \newcommand*{\VEC}[1]  {\ensuremath{\boldsymbol{#1}}}
 \newcommand*{\FAM}[1]  {\ensuremath{\boldsymbol{#1}}}
@@ -267,6 +301,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 \section*{Algorithms}
 \begin{acronym}[HyperNEAT] % Give the longest acronym here
 \acro{NEAT}{\emph{NeuroEvolution of Augmenting Topologies}}
+\acro{CPPN}{\emph{Compositional Pattern-Producing Network}}
 \acro{HyperNEAT}{\emph{Hypercube-based NEAT}}
 \acro{CGP}{\emph{Cartesian Genetic Programmin}}
 \acro{CMA-ES}{\emph{Covariance matrix adaptation evolution strategy}}
