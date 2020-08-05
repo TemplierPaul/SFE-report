@@ -98,9 +98,27 @@ The parameters to run NEAT are defined in a \href{https://github.com/TemplierPau
 One of the available activation functions is randomly selected when a new neuron is created, allowing the implementation of a Compositional Pattern-Producing Network (CPPN) by making multiple ones available. The default activation function for NEAT is the sigmoid. 
 
 \subsection{Crossover and innovation number}
-Another delicate part of the implementation of NEAT lies in 
+A usually delicate part of the implementation of NEAT lies in the management of the innovation number, which tracks genes across the population and guarantees the same gene is recognized on both sides during crossover.
+
+In this implementation, and according to Cambrian's structure, a configuration dictionary is passed across the algorithm to each method requiring run parameters, built from the YAML configuration file. The innovation number is stored inside and updated after each mutation adding a gene. 
+
+Using a dictionary in the individual to store each gene linked to its innovation number allows to compare genomes more efficiently at crossover than an array of genes. 
 
 \subsection{Speciation threshold}
+NEAT relies on speciation to update its population:
+\begin{itemize}
+    \item If individuals are closer than the speciation threshold, they get put in the same species
+    \item The fitness of each individual is computed with explicit fitness sharing, hence divided by the size of the population of their species
+    \item Offspring are distributed among species depending on the mean (or the max) fitness in the current members of the species
+    \item Reproduction is computed in each species by selecting parents randomly in the top members of the species (or based on their individual fitness in a tournament selection) and applying either mutation or crossover.
+    \item All offspring are assigned to the closest species
+\end{itemize}
+
+However as generations occur the distance between genomes grows and the algorithm tends to assign a different species to each individual, hence causing hundreds of species to appear. In order to keep a stable number of species, K.O.Stanley introduces on his website a changing threshold, increasing of decreasing by a fix amount in order to keep the number of active species stable. 
+
+I introduced a slightly modified version of this algorithm as \code{update\_threshold!}, which modifies the threshold by an amount scaled on the ratio: $$current\_species\_number \over wanted\_species\_number$$
+
+This solution yields a very stable number of species, although usually higher than the wanted number.
 
 \subsection{NEAT in a standard Genetic Algorithm}
 
@@ -109,7 +127,7 @@ The goal of using Cambrian as a framework in this implementation also was to all
 Hence, I finally implemented a simple wrapper to use the NEAT Individual and its mutation and crossover operators in a standard Genetic Algorithm, ignoring the specific species-based populate function for the standard Cambrian \code{ga\_populate} function.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=NEAT in a Genetic Algorithm (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=Genetic Algorithm populate for NEAT  (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}{\color{blue}{Source}})]
 function neat_ga_populate!(e::Evolution)
     mut::Function=i::NEATIndiv -> 
                     NeuroEvolution.mutate(i, e.cfg)
@@ -120,8 +138,10 @@ end
 \end{lstlisting}
 \end{minipage}
 
+This compatibility with other Cambrian algorithms allows to easily use the NEAT individual in other settings such as Quality-Diversity methods or open-ended evolution, thus helping in new algorithms research.
+
 \section{Adding HyperNEAT}
-HyperNEAT \cite{HyperNEAT} introduces indirect encoding by using a CPPN (Compositional Pattern-Producing Network \cite{CPPN}) to determine the weights of a neural network with a fix architecture. Since the CPPN can be evolved with the NEAT algorithm for HyperNEAT, most evolutionary methods developed earlier can be reused. \\ 
+HyperNEAT \cite{HyperNEAT} introduces indirect encoding by using a CPPN (Compositional Pattern-Producing Network \cite{CPPN}) to determine the weights of a neural network with a fix architecture. Since the CPPN can be evolved with the NEAT algorithm for HyperNEAT, most evolutionary methods in NeuroEvolution.jl can be reused. \\ 
 However, instead of evaluating the evolved network (the CPPN) to solve the problem, the CPPN is used to determine the weights of a network with fixed architecture, referenced here as the \code{final network}. 
 
 \subsection{HyperNEAT Individual}
