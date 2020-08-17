@@ -1,27 +1,39 @@
 \chapter{Breezy Project: a DOTA 2 competition}
 \label{chap:dota}
 
-During the first month of my internship I teamed up with my supervisor \href{https://www.linkedin.com/in/dennis-g-wilson/}{\color{blue}{Assoc. Prof. Dennis Wilson}} and my fellow Research Intern \href{https://www.linkedin.com/in/lucashervier/}{\color{blue}{Lucas Hervier}} to participate in an Evolutionary Reinforcement Learning competition held as part of the international Genetic and Evolutionary Computation Conference, known as GECCO 2020, on the DOTA 2 video game.
+During the first month of my internship I teamed up with my supervisor \addlink{https://www.linkedin.com/in/dennis-g-wilson/}{Assoc. Prof. Dennis Wilson} and my fellow Research Intern \addlink{https://www.linkedin.com/in/lucashervier/}{Lucas Hervier} to participate in an Evolutionary Reinforcement Learning competition held as part of the international Genetic and Evolutionary Computation Conference, known as GECCO 2020, on the DOTA 2 video game. \\
+The agents we submitted are available on \addlink{https://github.com/d9w/DotaBot}{GitHub}, and the source code has been \addlink{https://github.com/d9w/Project-Breezy-DOTA-Evolutionnary}{made open-source}.
 
 \section{Context}
+\subsection{Video games and Machine learning}
 In 2018 the video game industry generated sales of more than US\$130 billion, reaching around 2 billion players around the world. Because video games can provide complex tasks necessitating short- and long-term planning in a controlled environment with no risks to humans \cite{Games_AI}, they also provide an excellent test-bed for Artificial Intelligence (AI) systems. Multiple learning agents have been tested on the Arcade Learning Environment based on Atari 2600 games \cite{Atari}, including Reinforcement Learning (RL) techniques like Deep Q Networks \cite{DQN} and Agent57 \cite{agent57}. Other games such as StarCraft, DOTA2, Mario, or Doom, have also been extensively used as machine learning benchmarks.
 
 Since the reward in games is often sparse, making the learning signal weak, gradient-based methods might struggle for the optimization of neural network parameters. Evolutionary Strategies (ES), which estimate the gradient of the objective function without needing an explicit gradient definition, have been used to optimize Deep Convolutional Neural Networks \cite{CMAES_DL}, and the evolution of synaptic weights have been demonstrated to be competitive with deep RL methods\cite{deep_neuroevo}.\\
 
-In this context, \href{https://web.cs.dal.ca/~dota2/?page_id=353}{\color{blue} {Project Breezy}} is a competition created by Robert Smith and Malcolm Heywood from Dalhousie University to develop a \href{https://store.steampowered.com/app/570/Dota_2/}{\color{blue}{DOTA 2}}-playing bot evolved with evolutionary algorithms, in a 1-versus-1 symmetrical match-up. 
+\subsection{OpenAI Five}
+From 2016 to 2019, \addlink{https://openai.com/about/}{OpenAI} published work on the \addlink{https://openai.com/projects/five/}{OpenAI Five project}, an AI trained to play Dota 2 first in 1v1, and then extended to 5v5. OpenAI Five achieved a \addlink{https://arena.openai.com/#/results}{99.4\% win rate} against human players of any rank and \addlink{https://openai.com/blog/openai-five-defeats-dota-2-world-champions/}{defeated the world champions} twice in a live tournament, while also showing cooperation capabilities with humans. 
+
+However, most of the technical details of the AIs trained for this project still remain unknown and unpublished, from the model architecture to the interface used to communicate with the game developed in partnership with Valve. Hence, further work and results reproduction are harder to implement, adding to the computational constraint (OpenAI Five required 764 petaflop/s-day operations for \textbf{over 10,000 years of games} against itself, totalling around $6.6.10^{22}$ operations). This makes the use of Dota 2 as a RL benchmark and its use in the development of open-source RL algorithms still an open problem. 
+
+\subsection{Project Breezy}
+
+In this context, \addlink{https://web.cs.dal.ca/~dota2/?page_id=353}{Project Breezy} is a competition created by Robert Smith and Malcolm Heywood from Dalhousie University to develop a DOTA 2-playing bot evolved with evolutionary algorithms, in a 1-versus-1 symmetrical match-up. 
+
+For this purpose, they implemented and published a server interfacing with the Dota 2 game. However as this work was not officially supported by Valve there may still be a performance difference compared to the system used to train openAI Five.
 
 We entered this competition as an opportunity to try and test neuroevolution algorithms on a complex real-time game, and as a step towards the development of a comprehensive benchmark of Evolutionary Reinforcement Learning algorithms.
 
 \section{DOTA 2 as a RL environment}
 \subsection{The game}
 
-\href{https://en.wikipedia.org/wiki/Dota_2}{\color{blue}{Dota 2}} is the sequel of Defense of the Ancients (DotA), a community-created game mod for Warcraft III that popularised the Multiplayer Online Battle in Arena (\href{https://en.wikipedia.org/wiki/Multiplayer_online_battle_arena}{\color{blue}{MOBA}}) video game genre. In Dota 2, 2 teams (called "Radiant" and "Dire") of 5 players compete to destroy the main structure of the enemy's base (the "Ancient") in a real-time strategy game, each player controlling one of the 119 possible characters (the "heroes").
+Produced by Valve and available on its platform \addlink{https://store.steampowered.com/app/570/Dota_2/}{Steam}, \addlink{https://en.wikipedia.org/wiki/Dota_2}{Dota 2} is the sequel of Defense of the Ancients (DotA), a community-created game mod for Warcraft III that popularised the Multiplayer Online Battle in Arena (\addlink{https://en.wikipedia.org/wiki/Multiplayer_online_battle_arena}{MOBA}) video game genre. In Dota 2, 2 teams (called "Radiant" and "Dire") of 5 players compete to destroy the main structure of the enemy's base (the "Ancient") in a real-time strategy game, each player controlling one of the 119 possible characters (the "heroes").
 
 \begin{figure}[H]
  \centering
  \captionsetup{justification=centering, margin=0.5cm}
  \includegraphics[width=8cm]{images/Dota_2_Gameplay_Aug_2017.jpg}
-\caption{A game of Dota 2 in progress, showing the Radiant team inside their base at the beginning of a match (\href{https://en.wikipedia.org/wiki/Dota_2}{\color{blue}{Source}})}
+\caption{A game of Dota 2 in progress, showing the Radiant team inside their base at the beginning of a match}
+ \small\textsuperscript{\url{https://en.wikipedia.org/wiki/Dota_2}}
  \label{fig:dota-2-game}
 \end{figure}
 
@@ -31,17 +43,21 @@ The game takes place on a square map (cf fig. \ref{fig:dota-2-map}) which contai
  \centering
  \captionsetup{justification=centering, margin=0.5cm}
  \includegraphics[width=8cm]{images/dota-map.png}
-\caption{Labelled Dota 2 map as of version 7.20 (\href{https://dota2.gamepedia.com/Map}{\color{blue}{Source}})}
+\caption{Labelled Dota 2 map as of version 7.20}
+ \small\textsuperscript{\url{https://dota2.gamepedia.com/Map}}
  \label{fig:dota-2-map}
 \end{figure}
 
 The 1v1 game mode opposes only 1 player in each team, and can be won by either killing the enemy twice, or destroying the first enemy tower on the middle lane. \\
-The game mode used for this competition additionally fixes the heroes to be \href{https://dota2.gamepedia.com/Shadow_Fiend}{\color{blue}{Shadow Fiend}} for both players, for balancing purposes.
+The game mode used for this competition additionally fixes the heroes to be \addlink{https://dota2.gamepedia.com/Shadow_Fiend}{Shadow Fiend} for both players, for balancing purposes.
 
-\subsection{Project Breezy}
-\href{https://web.cs.dal.ca/~dota2/?page_id=353}{\color{blue} {Project Breezy}} provides software to enable communication with the Dota 2 game by opening a server communicating with the game instance. The agent, through a Python server, interacts with the Breezy server, getting the game state and sending action orders. The game state contains 310 features such as health points, hero position, creeps positions, or spell cooldowns. 29 actions are available, including movementS, spell casting, or attacking.
+\subsection{Project Breezy Software}
+\addlink{https://web.cs.dal.ca/~dota2/?page_id=353}{Project Breezy} provides software to enable communication with the Dota 2 game by opening a server communicating with the game instance. The agent, through a Python server, interacts with the Breezy server, getting the game state and sending action orders. The game state contains 310 features such as health points, hero position, creeps positions, or spell cooldowns. 29 actions are available, including movementS, spell casting, or attacking.
+
+We noticed the server actually returned the state before effectuating an action, adding a delay in the information processing. Even though evolved models might still work thanks to internal memory, recurrence, or implicit prediction, this made predicting the next state in the simulator and analyzing behaviors significantly harder. 
 
 \subsection{Challenges}
+\begin{minipage}{\linewidth}
 Evolving Neural Networks to play Dota 2 is subject to multiple constraints:
 \begin{itemize}
     \item \textbf{Processing time}: Since DOTA 2 is a real-time game, the generated neural networks needs to be fast to evaluate at each step.
@@ -50,6 +66,7 @@ Evolving Neural Networks to play Dota 2 is subject to multiple constraints:
     \item\textbf{Network complexity}: Since Dota 2 requires both short- and long-term planning, more complex architectures might be required 
     \item \textbf{Fitness sparsity}: Since the fitness used rewards dealing damage and last hitting, many behaviors that do not get close enough to the enemy have the same fitness, hence information about the quality of an individual is rare and requires already advanced policies
 \end{itemize}
+\end{minipage}
 
 \section{Our approach}
 
@@ -64,7 +81,7 @@ The final fitness function is hence as follows:
 
 \begin{equation*}
 \label{eq:fitness}
-\begin{minipage}{0.45\textwidth}
+\begin{minipage}{0.7\textwidth}
 % \begin{multline*}
 \begin{split}
  fitness & = netWorth + 100*lastHits + 100*denies\\

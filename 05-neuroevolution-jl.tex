@@ -1,17 +1,16 @@
 \chapter{Developping NeuroEvolution.jl}
 \label{chap:neuroevo}
 
-\href{https://github.com/TemplierPaul/NeuroEvolution.jl}{\color{blue}{NeuroEvolution.jl}} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NEuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is in progress to complete it. 
+\addlink{https://github.com/TemplierPaul/NeuroEvolution.jl}{NeuroEvolution.jl} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NEuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is in progress to complete it. 
 
 The concepts powering the NEAT algorithm may seem relatively simple and clear as described in the literature, making it a quite elegant solution. \\
-However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it for an earlier \href{https://github.com/TemplierPaul/Genepy}{\color{blue}{personal project}},  and in the \href{https://github.com/d9w/NEAT.jl/tree/master/src}{\color{blue}{NEAT agent}} developed for the Breezy competition (cf chapter \ref{chap:dota}), helped design a more reliable structure and drastically reduced the development time.
+However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it for an earlier \addlink{https://github.com/TemplierPaul/Genepy}{personal project},  and in the \addlink{https://github.com/d9w/NEAT.jl/tree/master/src}{NEAT agent} developed for the Breezy competition (cf chapter \ref{chap:dota}), helped design a more reliable structure and drastically reduced the development time.
 
 This chapter aims at presenting the choices made during the design and development of NeuroEvolution.jl, its architecture and the main principles ruling it. 
 
 \section{NEAT implementation}
-I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \href{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{
-\color{blue}{his website}}. \\
-The \href{https://github.com/FernandoTorres/NEAT}{\color{blue}{reorganized version}} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
+I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \addlink{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{his website}. \\
+The \addlink{https://github.com/FernandoTorres/NEAT}{reorganized version} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
 
 \subsection{NEAT Individual}
 
@@ -20,7 +19,7 @@ Based on Cambrian.jl, NeuroEvolution.jl uses an abstract type \code{NEATIndiv} f
 A \code{NEATIndividual} object contains a dictionary mapping an innovation number to a gene, which represents a connection between two neurons, a list of neurons defined by their positions, a dictionary mapping each neuron position to the activation function of the corresponding neuron, a \code{Network} object containing the neural network built from the genome, and a list of the fitness of the individual as required by Cambrian.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=NEAT Individual (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/individual.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=NEAT Individual]
 abstract type NEATIndiv <: Cambrian.Individual end
 
 mutable struct NEATIndividual <: NEATIndiv
@@ -31,6 +30,7 @@ mutable struct NEATIndividual <: NEATIndiv
     activ_functions::Dict
 end
 \end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/individual.jl}\\
 \end{minipage}
 
 \subsection{Neuron position and Execution order}
@@ -68,7 +68,7 @@ Because of this structure, and to avoid edge cases, connections between 2 output
 When computing the network's output, its neurons are sorted by ascending position. Since the position determines the neuron type, choosing the update type is simple:
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=NEAT network processing (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/process.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=NEAT network processing]
 for p in indiv.neuron_pos
     if p < 0 # Input neurons
         indiv.network.neurons[p].output = 
@@ -81,11 +81,12 @@ for p in indiv.neuron_pos
     end
 end
 \end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/process.jl}\\
 \end{minipage}
 
 \subsection{Run configuration}
 
-The parameters to run NEAT are defined in a \href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/test.yaml}{\color{blue}{YAML file}}  that is read at runtime. It includes:
+The parameters to run NEAT are defined in a \addlink{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/test.yaml}{YAML file}  that is read at runtime. It includes:
 
 \begin{itemize}
     \item Cambrian settings: population size, number of generations
@@ -127,7 +128,7 @@ The goal of using Cambrian as a framework in this implementation also was to all
 Hence, I finally implemented a simple wrapper to use the NEAT Individual and its mutation and crossover operators in a standard Genetic Algorithm, ignoring the specific species-based populate function for the standard Cambrian \code{ga\_populate} function.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=Genetic Algorithm populate for NEAT  (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=Genetic Algorithm populate for NEAT]
 function neat_ga_populate!(e::Evolution)
     mut::Function=i::NEATIndiv -> 
                     NeuroEvolution.mutate(i, e.cfg)
@@ -136,11 +137,12 @@ function neat_ga_populate!(e::Evolution)
     Cambrian.ga_populate!(e, mutation=mut, crossover=cross)
 end
 \end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}\\
 \end{minipage}
 
 This compatibility with other Cambrian algorithms allows to easily use the NEAT individual in other settings such as Quality-Diversity methods or open-ended evolution, thus helping in new algorithms research.
 
-\section{Adding HyperNEAT}
+\section{HyperNEAT}
 HyperNEAT \cite{HyperNEAT} introduces indirect encoding by using a CPPN (Compositional Pattern-Producing Network \cite{CPPN}) to determine the weights of a neural network with a fix architecture. Since the CPPN can be evolved with the NEAT algorithm for HyperNEAT, most evolutionary methods in NeuroEvolution.jl can be reused. \\ 
 However, instead of evaluating the evolved network (the CPPN) to solve the problem, the CPPN is used to determine the weights of a network with fixed architecture, referenced here as the \code{final network}. 
 
@@ -149,7 +151,7 @@ However, instead of evaluating the evolved network (the CPPN) to solve the probl
 HyperNEAT was added to NeuroEvolution.jl by creating a structure \code{HyperNEATIndiv}, inheriting from \code{NEATIndividual} like \code{NEATIndiv}. Thus, functions affecting the evolved network (e.g. mutation, crossover, populate) take as arguments any object inheriting from the abstract type \code{NEATIndividual}, and are blind to whether NEAT or HyperNEAT is used. Conversely, other functions related to the evaluation of an individual (e.g. evaluate, build, process) are algorithm-specific and are defined for each individual type.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=HyperNEAT Individual (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/HyperNEAT.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=HyperNEAT Individual]
 mutable struct HyperNEATIndividual <: NEATIndiv
     genes::Dict
     fitness::Array{Float64}
@@ -159,6 +161,7 @@ mutable struct HyperNEATIndividual <: NEATIndiv
     hn_net::GridNetwork
 end
 \end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/HyperNEAT.jl}\\
 \end{minipage}
 
 \code{HyperNEATIndividual} uses the same structure as \code{NEATIndividual}, adding a \code{hn\_network} field to store the generated final network described in subsection \ref{sub:final-hn-net}.
@@ -168,19 +171,20 @@ end
 The final network is a feed-forward, fully-connected neural network with a fixed architecture. It is build from an array of \code{Layer} objects, each containing the output values of a neurons layer, and an array of \code{Connection} objects linking 2 layers and implementing weights. 
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=HyperNEAT final network (\href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/HyperNEAT.jl}{\color{blue}{Source}})]
+\begin{lstlisting}[language=Julia, caption=HyperNEAT final network]
 mutable struct GridNetwork
     layers::Array{Layer}
     connections::Array{Connection}
 end
 \end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/HyperNEAT.jl}\\
 \end{minipage}
 
 The \code{build!} method creates the final network and sets its weighs with the CPPN, while the \code{process!} method computes the output of the final network. This approach allows to only build the network once, but increases complexity by adding a step to place between mutation and evaluation.
 
 \subsection{Run configuration}
 
-Using HyperNEAT requires a \href{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/hyperneat.yaml}{\color{blue}{specific YAML file}} which adds information about hidden layers and structure of the generated network to the standard NEAT parameters. 
+Using HyperNEAT requires a \addlink{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/hyperneat.yaml}{specific YAML file} which adds information about hidden layers and structure of the generated network to the standard NEAT parameters. 
 
 Although the default architecture for the final networks only links a layer of neurons to the previous one, toggling the \code{hn\_link\_all\_layers} parameter to \code{true} creates a connection between each layer and all the previous ones, for a more complex architecture. Using a CPPN for weights generation makes it possible to use such architecture without expanding the search space, contrary to direct encoding. 
 

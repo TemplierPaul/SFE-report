@@ -132,8 +132,17 @@ urlcolor=black}
     frame            = tblr,
 }
 
-% \code definition to include code in text
+% code definition to include code in text
 \def\code#1{\texttt{#1}}
+
+\usepackage{url}
+%%% display links as blue href 
+% \newcommand{\addlink}[2]{\href{#1}{\color{blue}{#2}}}
+%%% display links as footnote
+\newcommand{\addlink}[2]{\href{#1}{#2}\footnote{\url{#1}}}
+
+% Continuous footnotes across whole document
+\counterwithout*{footnote}{chapter}
 
 \newcommand*{\SET}[1]  {\ensuremath{\mathbf{#1}}}
 \newcommand*{\VEC}[1]  {\ensuremath{\boldsymbol{#1}}}
@@ -293,7 +302,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 \setcounter{tocdepth}{1} % Only display Chapter + section / not subsections
 \tableofcontents
 
-\lstlistoflistings
+% \lstlistoflistings
 
 \chapter*{Acronyms}
 \section*{Concepts}
@@ -313,7 +322,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendi
 \acro{HyperNEAT}{\emph{Hypercube-based NEAT}}
 \acro{CGP}{\emph{Cartesian Genetic Programmin}}
 \acro{CMA-ES}{\emph{Covariance Matrix Adaptation Evolution Strategy}}
-\acro{BERL}{\emph{Benchmarking Evolutionary Reinforcement Learning (\href{https://github.com/d9w/BERL.jl}{GitHub})}}
+\acro{BERL}{\emph{Benchmarking Evolutionary Reinforcement Learning }}
 \end{acronym}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
