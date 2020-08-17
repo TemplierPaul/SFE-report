@@ -19,9 +19,9 @@ However, most of the technical details of the AIs trained for this project still
 
 In this context, \addlink{https://web.cs.dal.ca/~dota2/?page_id=353}{Project Breezy} is a competition created by Robert Smith and Malcolm Heywood from Dalhousie University to develop a DOTA 2-playing bot evolved with evolutionary algorithms, in a 1-versus-1 symmetrical match-up. 
 
-For this purpose, they implemented and published a server interfacing with the Dota 2 game. However as this work was not officially supported by Valve there may still be a performance difference compared to the system used to train openAI Five.
+For this purpose, they implemented and published a server interfacing with the Dota 2 game. As this work was not officially supported by Valve there may still be a performance difference compared to the system used to train openAI Five, but it provides an open-source tool for benchmarks.
 
-We entered this competition as an opportunity to try and test neuroevolution algorithms on a complex real-time game, and as a step towards the development of a comprehensive benchmark of Evolutionary Reinforcement Learning algorithms.
+We entered this competition as an opportunity to try and test neuroevolution algorithms on a complex real-time game, and as a step towards the development of a comprehensive benchmark of Evolutionary Reinforcement Learning algorithms as described in Chapter \ref{chap:berl}.
 
 \section{DOTA 2 as a RL environment}
 \subsection{The game}
@@ -74,7 +74,7 @@ Evolving Neural Networks to play Dota 2 is subject to multiple constraints:
 \label{sec:representation choice}
 
 \subsubsection{Fitness Function}
-In order to win a 1v1, a player needs to kill the opponent twice or to take his first mid tower. Consequently, we took into account the number of times we killed the opponent champion and the opponent tower health in the individual evaluation. Moreover, to succeed in one of those two tasks one would also need good laning skills. Therefore, we also took into account the amount of gold collected (\textit{net worth}), the number of last hits, and the number of denies. We also punished being killed and behaviors causing an early stopping.
+As in order to win a 1v1 a player needs to either kill the opponent twice or to take his first mid tower, we took into account the number of times we killed the opponent champion and the opponent tower health in the individual evaluation. Moreover, to succeed in one of those two tasks one would also need good laning skills, so we also added the amount of gold collected (\textit{net worth}), the number of last hits, and the number of denies. We also punished being killed and behaviors causing an early stopping as referenced in section \ref{sub:early-stop}.
 
 \begin{minipage}{\linewidth}
 The final fitness function is hence as follows:
@@ -102,22 +102,40 @@ We described the behavior in a discretized 2-dimensional space featuring the \te
 We quickly realized that one of the main difficulty of this challenge was to deal with the evaluation cost of the fitness. Indeed, in order to evaluate an agent we need him to play a full DOTA2 game which can take up to several minutes in real time, even with a tenfold speeding. Since Evolutionnary Algorithms (EAs) require a large number of function evaluations, we had to find a way to cope with this issue. 
 
 \subsubsection{Early stopping}
+\label{sub:early-stop}
 A simple but efficient way of reducing the evaluation time was to use an Early Stopping mechanism. We decided to stop the evaluation of an agent if he did not kill a creep after 5min of DOTA time. This functionality reduced the time loss due to static individual, and the evaluation length of "coward individuals" avoiding fights.
 
 \subsubsection{Neural-base simulator}
-Since an evaluation is time consuming, we developped a \href{https://github.com/TemplierPaul/Dota_Simulator}{\textbf{Dota Simulator}} to predict game state evolutions from previous state and chosen action, using a neural network based on the UNet \cite{UNet} architecture which we trained on random play. It was used in the offsprings generation phase:
+Since an evaluation is time consuming, I developped a \addlink{https://github.com/TemplierPaul/Dota_Simulator}{\textbf{Dota Simulator}} to predict game state evolutions from previous state and chosen action, using a neural network trained on more than 100 games played with a random policy.
+
+The  main part of the simulator was implemented in object-orient Python to process game data, remove constant features to reduce the size of the network, create and train the neural network, and act as a simulator with a Gym-like API. A Julia wrapper was then added, to allow plugging the simulator into the rest of the project.\\
+Jupyter notebooks were also used to explore data and train the networks on the \addlink{https://research.google.com/colaboratory/local-runtimes.html?hl=en}{Google Colaboratory} platform.  
+
+3 networks of growing depths based on the UNet \cite{unet} architecture, and simple feed-forward neural networks were tried, with no particular performance difference observed. Finally, a feed-forward network with few layers of many neurons was chosen.  
+
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[width=8cm]{images/unet.PNG}
+\caption{Example U-net architecture in \cite{unet}, each blue box corresponding to a multi-channel feature map.}
+ \label{fig:dota-2-map}
+\end{figure}
+
+The simulator was used in the offsprings generation phase to encourage diversity:
 \begin{itemize}
     \item offsprings are generated for 10 times the size of population 
-    \item 100 game steps are simulated for each offspring, and the actions stored
+    \item 100 game steps are simulated for each offspring, and the actions taken at each step are stored
     \item the actions taken by each individual are used to select the \textit{population size} most unique offsprings based on behavior
-    \item those individuals are added to the new population and evaluated in the real game
+    \item those individuals are added to the new population and evaluated in the real game to compute the real fitness
 \end{itemize}
+
 By doing so we are seeing much more mutation and/or crossover. Moreover, taking the individuals the more distant from each other increases our chances to cover the behavior space.
 
 \subsection{Algorithms}
 We chose to train both CGP Individuals  \cite{CGP} and NEAT Individuals \cite{NEAT_1}, as defined in the respective papers, in a MAP-Elites algorithm. They were implemented with \href{https://github.com/d9w/CartesianGeneticProgramming.jl}{\textbf{CartesianGeneticProgramming.jl}} for the CGP agent, and a custom NEAT agent developed at \href{https://github.com/d9w/NEAT.jl}{\textbf{NEAT.jl}} for this challenge.
 
-As we believed the best way to find interesting individuals, either with NEAT or with CGP, was to explore the behavorial space, we based the exploration on the \textbf{Illuminating search spaces by mapping elites} \cite{MapElites} paper. 
+As we believed the best way to find interesting individuals, either with NEAT or with CGP, was to explore the behavorial space, we based the exploration on the \textbf{Illuminating search spaces by mapping elites} \cite{MapElites} work, implementing a MAP-Elites method to find policies of varying styles, focusing more on killing the enemy, on destroying the tower, or balancing both. 
+As the evaluation of a policy relies on a full game which can be heavily influenced by small perturbations, including time delays due to the Breezy software communication method, the behavior space can be seen as a noisy domain. Hence, we believe using the work of \cite{noisy-map-elites} on MAP-Elites in noisy domains using deep grids to consider this property and  make the evaluation more reliable could improve future work, since it was published too late for us to implement it. 
 
 \section{Results}
 

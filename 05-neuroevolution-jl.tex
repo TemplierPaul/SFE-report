@@ -8,7 +8,36 @@ However, its implementation raises multiple complex issues, turning out to be ra
 
 This chapter aims at presenting the choices made during the design and development of NeuroEvolution.jl, its architecture and the main principles ruling it. 
 
-\section{NEAT implementation}
+\section{Original NEAT algorithm}
+\label{sec:og-neat}
+
+The NEAT algorithm relies on 3 main solutions to neuroevolution issues:
+\begin{itemize}
+    \item \textbf{Crossover between different structures}: NEAT provides a genotype-to-phenotype mapping based on mutations (Fig. \ref{fig:NEAT}).
+    \item \textbf{Protection of topological innovation}: The speciation mechanism evaluates candidates by comparing them to similar architectures to allow new structures to mature without being instantly eliminated. 
+    \item \textbf{Minimization of structural complexity}: Nodes are added to a minimal initial structure in order to prevent networks from being too big without benefits.
+\end{itemize}
+
+\subsection{Crossover and Mutation}
+\todo{add mutation and crossover mechanisms + images}
+
+\subsubsection{Mutation power}
+
+The $mutation\_power$ parameter implements a stronger mutation amplitude on the weights of the last genes of the genome, as they are more recent. It considers older genes have had more time to be optimised, and that newer ones may require bigger steps to converge faster. It is not part of the original paper, but has been described on the author's website and in his code.
+
+\subsection{Speciation}
+
+\subsubsection{Stolen children}
+The stolen children feature consists in removing a few offsprings from bad species and adding them to good ones, making the search more greedy. It is not part of the original paper, but has been described on the author's website and in his code.
+
+\subsubsection{Elitism}
+Elitism is the mechanism keeping the best individuals ("elites") from a generation to the next one, ensuring the best solution is not lost once encountered. \\
+There is no elitism in the original implementation.
+
+\subsection{Hyperparameters}
+
+
+\section{Implementing NEAT}
 I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \addlink{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{his website}. \\
 The \addlink{https://github.com/FernandoTorres/NEAT}{reorganized version} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
 
@@ -25,9 +54,9 @@ abstract type NEATIndiv <: Cambrian.Individual end
 mutable struct NEATIndividual <: NEATIndiv
     genes::Dict
     fitness::Array{Float64}
-    neuron_pos::Array{Float64}
+    neuron\_pos::Array{Float64}
     network::Network
-    activ_functions::Dict
+    activ\_functions::Dict
 end
 \end{lstlisting}
 Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/individual.jl}\\
@@ -60,8 +89,8 @@ The position of a neuron is defined as follows:
  \label{NEAT_network}
 \end{figure}
 
-Neurons added through mutation of a connection are placed at a random position between the origin node of the connection at $p_o$ and the destination node at $p_d$, so that the order of execution is not modified. \\
-The position of the new neuron is therefore randomly drawn in $]p_o, p_d[ \: \cap \: ]0, 1[$.
+Neurons added through mutation of a connection are placed at a random position between the origin node of the connection at $p\_o$ and the destination node at $p\_d$, so that the order of execution is not modified. \\
+The position of the new neuron is therefore randomly drawn in $]p\_o, p\_d[ \: \cap \: ]0, 1[$.
 
 Because of this structure, and to avoid edge cases, connections between 2 output neurons are forbidden. Connections towards input and bias neurons are blocked too, since their values are fixed to the input vector and to 1 respectively.
 
@@ -69,10 +98,10 @@ When computing the network's output, its neurons are sorted by ascending positio
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Julia, caption=NEAT network processing]
-for p in indiv.neuron_pos
+for p in indiv.neuron\_pos
     if p < 0 # Input neurons
         indiv.network.neurons[p].output = 
-                    last_features[Int(-p)]
+                    last\_features[Int(-p)]
     elseif p == 0 # Bias neuron
         indiv.network.neurons[p].output = 1
     else # Hidden and output neurons
@@ -129,12 +158,12 @@ Hence, I finally implemented a simple wrapper to use the NEAT Individual and its
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Julia, caption=Genetic Algorithm populate for NEAT]
-function neat_ga_populate!(e::Evolution)
+function neat\_ga\_populate!(e::Evolution)
     mut::Function=i::NEATIndiv -> 
                     NeuroEvolution.mutate(i, e.cfg)
     cross::Function=(p1, p2) -> 
                     NeuroEvolution.crossover(p1, p2, e.cfg)
-    Cambrian.ga_populate!(e, mutation=mut, crossover=cross)
+    Cambrian.ga\_populate!(e, mutation=mut, crossover=cross)
 end
 \end{lstlisting}
 Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}\\
@@ -155,10 +184,10 @@ HyperNEAT was added to NeuroEvolution.jl by creating a structure \code{HyperNEAT
 mutable struct HyperNEATIndividual <: NEATIndiv
     genes::Dict
     fitness::Array{Float64}
-    neuron_pos::Array{Float64}
+    neuron\_pos::Array{Float64}
     network::Network
-    activ_functions::Dict
-    hn_net::GridNetwork
+    activ\_functions::Dict
+    hn\_net::GridNetwork
 end
 \end{lstlisting}
 Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/HyperNEAT.jl}\\
