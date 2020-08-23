@@ -13,13 +13,41 @@ This chapter aims at presenting the choices made during the design and developme
 
 The NEAT algorithm relies on 3 main solutions to neuroevolution issues:
 \begin{itemize}
-    \item \textbf{Crossover between different structures}: NEAT provides a genotype-to-phenotype mapping based on mutations (Fig. \ref{fig:NEAT}).
+    \item \textbf{Crossover between different structures}: NEAT provides a genotype-to-phenotype mapping based on mutations (Fig. \ref{fig:NEAT} in chapter \ref{chap:evo}).
     \item \textbf{Protection of topological innovation}: The speciation mechanism evaluates candidates by comparing them to similar architectures to allow new structures to mature without being instantly eliminated. 
     \item \textbf{Minimization of structural complexity}: Nodes are added to a minimal initial structure in order to prevent networks from being too big without benefits.
 \end{itemize}
 
 \subsection{Crossover and Mutation}
-\todo{add mutation and crossover mechanisms + images}
+% \todo{add mutation and crossover mechanisms + images}
+
+\subsubsection{Mutation}
+Additionally to weight mutation, NEAT relies on 2 types of structural mutations: adding connections, and adding nodes.
+
+Adding a connection only requires creating a new gene between two neurons which were not previously linked. This new connection is assigned an incremented innovation number as a unique identifier across the whole population and all the generations.
+
+Adding a node requires splitting a connection into 2 new ones, by creating a new neuron and adding two new connections as two new genes. 
+
+\begin{figure}[H]
+\centering
+\captionsetup{justification=centering,margin=2cm}
+\includegraphics[width=10cm]{images/neat_mut.png}
+\caption{The two types of structural mutation in NEAT. Both types, adding a connection and adding a node, are illustrated with the genes above their phenotypes.  The top number in each genome is  the innovation number of that gene. New genes are assigned new increasingly higher innovation numbers. \cite{NEAT_2}}
+ \label{NEAT_network}
+\end{figure}
+
+\subsubsection{Crossover}
+NEAT crossover relies on the comparison of the two genomes based on the genes innovation numbers as unique identifiers. If both parents have a gene with the same innovation number (but possibly different weights), the algorithm selects one at random. If a gene only appears in one parent, it is selected if this parent has the better fitness.
+
+In the case where multiple activation functions are possible, the dictionaries linking each neuron to its function in each parent are merged, giving the priority to the fittest parent when a neuron appears in both. 
+
+\begin{figure}[H]
+\centering
+\captionsetup{justification=centering,margin=2cm}
+\includegraphics[width=10cm]{images/neat_cros.png}
+\caption{NEAT crossover mechanism matching  up  genomes  for  different  network  topologies  using  innovation numbers.   Although  Parent 1  and  Parent 2  look  different,  their  innovation  numbers (shown at the top of each gene) tell us which genes match up with which. For matching genes, the one to keep is selected at random. \cite{NEAT_2}}
+ \label{NEAT_network}
+\end{figure}
 
 \subsubsection{Mutation power}
 
@@ -31,7 +59,7 @@ The $mutation\_power$ parameter implements a stronger mutation amplitude on the 
 The stolen children feature consists in removing a few offsprings from bad species and adding them to good ones, making the search more greedy. It is not part of the original paper, but has been described on the author's website and in his code.
 
 \subsubsection{Elitism}
-Elitism is the mechanism keeping the best individuals ("elites") from a generation to the next one, ensuring the best solution is not lost once encountered. \\
+Elitism is the mechanism keeping the best individuals (\textit{elites}) from a generation to the next one, ensuring the best solution is not lost once encountered. \\
 There is no elitism in the original implementation.
 
 \subsection{Hyperparameters}
@@ -150,6 +178,29 @@ I introduced a slightly modified version of this algorithm as \code{update\_thre
 
 This solution yields a very stable number of species, although usually higher than the wanted number.
 
+\subsection{Compositional Pattern-Producing Networks}
+
+Compositional Pattern-Producing Networks \cite{CPPN}, or CPPNs, are neural networks built with multiple possible activation functions, including \code{sin}, \code{cos}, or \code{tanh}, producing patterns with symmetries. 
+
+CPPNs can be evolved with CPPN-NEAT, a variant of NEAT where multiple activation functions are used, being determined when the node is created in a mutation. This architecture is used in HyperNEAT so that the final network can benefit from the symmetries. 
+
+As a standard NEAT is a CPPN with a single activation function, I implemented the possibility to have CPPNs in the base NEAT code, and the activation functions can be selected in the \addlink{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/test.yaml}{YAML config file}.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Julia, caption=Available activation functions in my implementation]
+# Activation functions
+sigmoid: true
+sin: false
+cos: false
+ReLU: false
+tanh: false
+abs: false
+identity: false
+gauss: false
+\end{lstlisting}
+Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/test.yaml}\\
+\end{minipage}
+
 \subsection{NEAT in a standard Genetic Algorithm}
 
 The goal of using Cambrian as a framework in this implementation also was to allow for a high compatibility with other algorithm so that the coding blocks defined for NEAT could be reused in classical evolutionary algorithms, from a Genetic Algorithm (GA) to a Quality-Diversity method as envisioned in the Breezy competition (cf chapter \ref{chap:dota}). 
@@ -216,8 +267,6 @@ The \code{build!} method creates the final network and sets its weighs with the 
 Using HyperNEAT requires a \addlink{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/hyperneat.yaml}{specific YAML file} which adds information about hidden layers and structure of the generated network to the standard NEAT parameters. 
 
 Although the default architecture for the final networks only links a layer of neurons to the previous one, toggling the \code{hn\_link\_all\_layers} parameter to \code{true} creates a connection between each layer and all the previous ones, for a more complex architecture. Using a CPPN for weights generation makes it possible to use such architecture without expanding the search space, contrary to direct encoding. 
-
-\section{CMA-ES applied to neuroevolution}
 
 %%% Local Variables: 
 %%% mode: latex

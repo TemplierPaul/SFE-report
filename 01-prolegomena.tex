@@ -2,17 +2,28 @@
 \label{chap:prolegomena}
 
 \section{Reinforcement Learning: what is an MDP?}
+
+A \textbf{Markov Decision Process} \cite{mdp} (or \textit{MDP}) is a process that formally describes a fully-observable environment, which means the current state fully characterizes the environment. 
+
+It can be defined as:
+
+\begin{itemize}
+    \item a set of states $S$
+    \item a set of actions $A$ that can be taken from the states in $S$
+    \item the probability $P_a(s, s')$ of reaching each state $s'$ if action $a$ is chosen from state $s$
+    \item and the immediate reward $R_a(s, s')$ associated with transitioning from state $s$ to state $s'$ by taking actions $a$
+\end{itemize}
       
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzpicture}
-
-  \node[draw] (A) at (0cm,0cm) {State s};
+  \node[draw] (A) at (0cm,0cm) {State s + Action s};
   \node[draw] (B) at (3cm,1.5cm) {State s'};
   \node[draw] (C) at (3cm,-1.5cm) {State s''};
+
   
-  \node[draw,fill=yellow] (Arga) at (1.5cm,2.5cm) {Action a'};
-  \node[draw,fill=yellow] (Argb) at (1.5cm,-2.5cm) {Action a''};
+  \node[draw,fill=yellow] (Arga) at (1.5cm,2.5cm) {Proba $p_1$};
+  \node[draw,fill=yellow] (Argb) at (1.5cm,-2.5cm) {Proba $p_2$};
   
   \draw node[vertex] (Jointa) at (1.5cm,0.75cm) {};
   \draw node[vertex] (Jointb) at (1.5cm, -0.75cm) {};
@@ -29,15 +40,27 @@
     \label{fig:my_label}
 \end{figure}
 
+A \textbf{policy} is a function $\pi$ that returns $\pi(s)$ the action taken by the decision maker. 
+
+The goal of \textbf{Reinforcement Learning} is to find the optimal policy $\pi^*$ that maximizes the total reward. 
 
 \section{Neural Networks acting as a policy}
 
-\section{Gradient-based optimization}
+As \addlink{https://en.wikipedia.org/wiki/Artificial_neural_network}{Artificial Neural Networks} can - in theory - approximate any function, they can be used as a mapping between the finite-dimensional parameter space to the policies space, allowing to then optimize the policy. This approach is called \textbf{Direct Policy search}. 
 
-\section{Evolutionary Reinforcement Learning}
-ERL is RL with evolutionary methods
+In this method, the network is optimized to output the best action to take from a state as input. Two optimization methods can be employed: gradient-based, or stochastic
 
-The ERL field lacks a comparison / benchmarking tool, which is why we did the DOTA 2 competition and we are working on BERL
+\subsection{Gradient-based optimization}
+
+\textbf{Policy gradient methods} use \addlink{https://en.wikipedia.org/wiki/Gradient_descent}{gradient descent} on the performance of the policy to optimize the neural network. However, if this method is the most efficient in supervised learning due to the availability of the true value to compute error, it can struggle in sparse environments and can get stuck in local optima. 
+
+\subsection{Evolutionary Reinforcement Learning}
+
+\textbf{Evolutionary Reinforcement Learning} (or \textit{ERL}) is the RL method based on using stochastic optimization, and more precisely evolutionary algorithms, to optimize a policy network. This allows to avoid relying on gradient, which is useful when the reward is sparse.
+
+Some evolutionary methods applied to evolutionary RL are described in chapter \ref{chap:evo}.
+
+As the ERL field is still lacking a tool to compare and benchmark algorithms, we have taken part in a Dota 2 ERL competition and are working on a benchmarking framework, as described in chapters \ref{chap:dota} and \ref{chap:berl}.
 
 \section{Development tools}
 \subsection{Julia}
@@ -55,7 +78,7 @@ Additionally a \addlink{https://travis-ci.org/}{\textbf{TravisCI}} instance was 
 
 \addlink{https://github.com/d9w/Cambrian.jl}{\textbf{Cambrian.jl}} is an Evolutionary Computation framework developed in Julia by my supervisor Dennis Wilson. It implements a structure to facilitate the development of evolutionary algorithms, focusing on genetic programming and neuroevolution. 
 
-I used Cambrian in to provide a consistent framework between projects and ensure compatibility, and for its usefulness in structuring the development.
+I used Cambrian in my development to provide a consistent framework between projects and ensure compatibility, and for its usefulness in structuring the development.
 
 %%% Local Variables: 
 %%% mode: latex
