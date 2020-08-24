@@ -3,11 +3,45 @@
 
 \section{Evolutionary Algorithms}
 
-\todo{GA principles: loop / 1+lambda}
+Evolutionary Algorithms, and more globally Evolutionary Computation, are bio-inspired approaches based on the idea of using some mechanisms of biological evolution \cite{origin-of-species} and genetics \cite{genetics} in computational methods \cite{introduction-ga}. 
+
+Evolutionary algorithms are stochastic optimization methods that use a population of candidate solutions (or \textit{individuals}) to iteratively reach an optimal or quasi-optimal solution by selecting the fittest individuals at each generation. They can use mutation operators, which modify some characteristics of an individual, and crossover operators that create children sharing traits with 2 (or more) parents from the population, in a process described in figure \ref{fig:GA}.
+
+Evolutionary Algorithms can be characterized at different levels:
+\begin{itemize}
+    \item \textbf{Problem}: Some algorithms can solve static problems like the Travelling Salesman Problem (TSP) while others optimize policies, for example investment strategies 
+    \item \textbf{Gene}: Based on biological genetics, genes are the basic blocks of the individual, each defining a parameter such as the value of an argument or a simple rule
+    \item \textbf{Genome}: This group of genes describes an individual 
+    \item \textbf{Phenotype}: Once expressed, the genome creates the phenotype, for example a graph from a list of genes each defining the weight of a link between 2 nodes.
+    \item \textbf{Fitness function}: The fitness function evaluates how well the individual is adapted to the problem, e.g. by computing the mean error or any function designed to be maximized by the algorithm
+\end{itemize}
+
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[width=9cm]{images/GA.png}
+ \caption{\label; Illustration of a Genetic Algorithm run. (1) A population $P_0$ of random individuals is created, (2) At each generation $t$, each individual in population $P_t$ is evaluated and assigned a fitness value based on the evaluation, (3) Some individuals are selected based on their fitness, (4) Mutation and Crossover operators create new individuals and generate the population $P_{t+1}$ for generation $t+1$, (5) This iteration is repeated until a stopping criterion (e.g. performance, computation cost) is reached.}
+\small\textsuperscript{Dennis Wilson, \url{https://github.com/d9w/evolution/blob/master/2_ga/1_GAs.ipynb}}
+ \label{fig:GA}
+\end{figure}
+
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[width=14cm]{images/gp_types_of_eas.png}
+ \caption{\label{fig:GP-classes} Evolutionary Algorithms: examples of individuals. \cite{intro-gp}}
+ \label{CMA-ES}
+\end{figure}
 
 \section{Evolution of policies}
 
-\todo{Evolutionary Programming / Genetic Programming (CGP) / ERL}
+While Genetic Algorithms are optimization algorithms, Evolutionary Programming evolves algorithms to behave like policies in an environment they interact with. It relies on the same mechanisms as Evolutionary Algorithms, except the individuals are functions. 
+
+These functions can be for example defined as graphs like Cartesian Genetic Programming \cite{CGP}, or as neural networks like NEAT \cite{NEAT_1}.
+
+In addition to previously shown features, individuals in Evolutionary Programming algorithms can be characterized by their behavior in an environment. We can hence look at \textbf{Genotype}, \textbf{Phenotype}, and \textbf{Behavior} for a mapping of individuals in a problem. Even though individuals may share similar genotypes of phenotypes, their behavior may differ due to the impact of the environment. 
+
+Optimizing functions to be used as policies through evolutionary algorithms is the field of Evolutionary Reinforcement Learning, as described in section \ref{sec:ERL}.
 
 \section{NeuroEvolution}
 \subsection{Direct encoding}
@@ -62,9 +96,43 @@ As Compositional Pattern Producing Networks implement multiple activation functi
 
 \section{Quality Diversity approaches}
 
-\section{Coevolution}
+While most evolutionary approaches focus on directly finding the individual with the highest fitness, the family of Quality-Diversity algorithms \cite{quality-diversity} favors solutions both diverse and high-performing. Since some RL problems can be very deceptive for neuroevolution (cf figure \ref{fig:maze}), evolving more varied behaviors can lead to better-performing solutions and avoids getting stuck in dead-ends.
 
-%%% Local Variables: 
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[width=5cm]{images/deceptive-maze.PNG}
+ \caption{\label: Deceptive maze in which (1) is the start region,
+(2) is the dead-end region, and (3) is the exit region. Evolution based on distance to the exit region leads to individuals being stuck in the dead-end region. \cite{novelty-search-theory}}
+ \label{fig:maze}
+\end{figure}
+
+\subsection{Novelty search}
+
+Novelty Search \cite{novelty-only} replaces the fitness function in a problem with a \textit{novelty score}, which defines how new the behavior of the individual is compared to previously encountered populations. It hence pushes towards more diversity, to cover the search space: it is a \textit{divergent} evolution technique.
+
+Novelty Search with local competition \cite{novelty-search-local-competition} applies this principle while still using the fitness score to keep the best-performing individuals in each niche, without inducing competition between individuals of different niches.
+
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[height=6cm]{images/novelty-maze.PNG}
+ \caption{\label: Solutions generated by (a) a random search of 10000 individuals in the genotype space and by (b) 100 generations of 100 individuals via novelty search. \cite{novelty-search-theory}}
+ \label{fig:Map-elites}
+\end{figure}
+
+\subsection{MAP-Elites}
+The  Multi-dimensional Archive of
+Phenotypic Elites (\textit{MAP-Elites}) algorithm \cite{MapElites} aims at \textit{illuminating the search space}, i.e. exploring the search space and keeping local elites in a discretized map of the space. By characterizing behavior with features independent from the fitness, MAP-Elites discovers diverse behaviors, and can show the fitness landscape of the problem and how attributes of solutions contribute to performance. 
+
+\begin{figure}[H]
+ \centering
+ \captionsetup{justification=centering, margin=0.5cm}
+ \includegraphics[height=6cm]{images/illumination.png}
+ \caption{\label: The MAP-Elites algorithm searches in a high-dimensional space to find the highest-performing solution at each point in a low-dimensional feature space, where the user gets to choose dimensions of variation of interest that define the low dimensional space. \cite{MapElites}}
+ \label{fig:Map-elites}
+\end{figure}
+
 %%% mode: latex
 %%% TeX-master: "isae-report-template"
 %%% End: 

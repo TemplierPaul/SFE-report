@@ -36,29 +36,40 @@ It can be defined as:
   
   \end{tikzpicture}
   
-    \caption{Markov Decision Process}
+    \caption{Markov Decision Process ($p_1 + p_2 = 1$)}
     \label{fig:my_label}
 \end{figure}
 
-A \textbf{policy} is a function $\pi$ that returns $\pi(s)$ the action taken by the decision maker. 
+A (deterministic) \textbf{policy} $\pi$ is a mapping from states to actions. $\pi: S \longrightarrow A$
 
-The goal of \textbf{Reinforcement Learning} is to find the optimal policy $\pi^*$ that maximizes the total reward. 
+The goal of \textbf{Reinforcement Learning} is to find the optimal policy $\pi^*$ that maximizes the expected sum of rewards across an experiment. 
 
 \section{Neural Networks acting as a policy}
 
-As \addlink{https://en.wikipedia.org/wiki/Artificial_neural_network}{Artificial Neural Networks} can - in theory - approximate any function, they can be used as a mapping between the finite-dimensional parameter space to the policies space, allowing to then optimize the policy. This approach is called \textbf{Direct Policy search}. 
+As neural networks \cite{perceptron} can - in theory - approximate any function, they can be used as to define a policy mapping any state to an action. The \textbf{Direct Policy search} approach aims at finding the best policy through the optimization of the parameters of this policy network.
 
-In this method, the network is optimized to output the best action to take from a state as input. Two optimization methods can be employed: gradient-based, or stochastic
+In this method, the network is optimized to output the best action to take from a state as input. Two optimization methods can be employed: gradient-based, or stochastic.
 
 \subsection{Gradient-based optimization}
 
-\textbf{Policy gradient methods} use \addlink{https://en.wikipedia.org/wiki/Gradient_descent}{gradient descent} on the performance of the policy to optimize the neural network. However, if this method is the most efficient in supervised learning due to the availability of the true value to compute error, it can struggle in sparse environments and can get stuck in local optima. 
+\textbf{Policy gradient methods} use gradient descent \cite{sgd} on the parameters of the neural network to optimize the policy. 
+
+As in supervised learning the true value of the target is known, the gradient is readily available, making gradient descent a viable option for neural network optimization. 
+
+However, reinforcement learning environments present harder settings for gradient-based optimization:
+
+\begin{itemize}
+    \item The best action is not already known, so the gradient is harder to compute
+    \item As a first-order method, gradient descent can get stuck in a local optimum or a plateau
+    \item RL environments with sparse rewards present many plateaus and make the gradient harder to find
+\end{itemize}
+
+Hence, optimizations methods not based on gradient such as evolutionary methods can be a solution to these sorts of problems.
 
 \subsection{Evolutionary Reinforcement Learning}
+\label{sec:ERL}
 
-\textbf{Evolutionary Reinforcement Learning} (or \textit{ERL}) is the RL method based on using stochastic optimization, and more precisely evolutionary algorithms, to optimize a policy network. This allows to avoid relying on gradient, which is useful when the reward is sparse.
-
-Some evolutionary methods applied to evolutionary RL are described in chapter \ref{chap:evo}.
+\textbf{Evolutionary Reinforcement Learning} (or \textit{ERL}) is the RL approach based on using stochastic optimization, and more precisely evolutionary algorithms, to optimize a policy network without relying on gradient. Some of these algorithms are described in chapter \ref{chap:evo}.
 
 As the ERL field is still lacking a tool to compare and benchmark algorithms, we have taken part in a Dota 2 ERL competition and are working on a benchmarking framework, as described in chapters \ref{chap:dota} and \ref{chap:berl}.
 

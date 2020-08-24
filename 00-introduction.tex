@@ -4,12 +4,25 @@
 \label{chap:introduction}
 %\minitoc
 
+\section*{Context}
 Evolutionary algorithms are an attractive alternative to gradient-based methods for the optimization of neural network parameters. Evolutionary strategies \cite{natural-evo-strat} estimate the gradient of the objective function but do not require a strict gradient definition, enabling their application to a variety of problems. The evolution of synaptic weights of a neural network has been demonstrated on a variety of tasks \cite{deep_neuroevo} and is competitive to state-of-the-art deep reinforcement learning methods such as Deep Q Networks \cite{human-lvl-control}. 
 
 However there are many open questions in the application of neural networks. Direct encoding approaches which optimize each synaptic weight often struggle with high-dimensionality, which is required for convolutional neural networks with millions of parameters. Indirect encoding approaches which optimize a surrogate function which is then applied to determine neural network weights might not be able to reach specific maxima due to the limitations of the genetic encoding. Finally, some evolutionary approaches also optimize neural network structure in addition to or instead of synaptic weight optimization. 
 
 Neural networks are often applied in supervised learning cases where data is plentiful and a strong error signal can be backpropogated through the network for each set of examples. Stochastic search methods such as evolutionary algorithms, which at best estimate the search space and are intended to optimize independent variables, are not an appropriate choice for supervised learning. However, when the learning signal is weak, such as in reinforcement learning, evolutionary methods can improve on gradient-based methods which must construct a differentiable approximation of the objective. The application domain of this internship is therefore games, which have a weak learning signal and sparse rewards; this is a domain where evolutionary algorithms are a good choice over other gradient-based methods.
 
+\section*{My internship}
+
+This internship takes place in the context of both my Masters degree in Engineering (MSc Eng) at \addlink{https://www.isae-supaero.fr/en/}{ISAE-SUPAERO} and my \addlink{http://m2rit-ro.recherche.enac.fr/}{Masters degree in Operations Research} led by ENAC (M2 RO) as a research internship in Machine Learning. I am an intern in the Department of Complex Systems Engineering (DISC) at ISAE-SUPAERO, in the \addlink{https://sureli.github.io/}{Supaero Reinforcement Learning Initiative (SuReLI)} research group.
+
+As the first goal of my internship was to study neuroevolution, i.e. the optimization of neural networks with evolutionary algorithms, I first joined \addlink{https://d9w.github.io/evolution/}{my supervisor's class on evolutionary computation} to deepen and expand my knowledge of this field. I then took part in a competition to evolve bots to play Dota 2 in a 1v1 setting. This first phase allowed me to gain a wider vision of evolutionary computation, along with helping me grasp the concepts and the API of Cambrian.jl.
+
+As my internship then focused more on Evolutionary RL in general, I started working on the BERL library to develop a benchmark as it was still a missing element in this field, for which I learnt the Julia language. \\
+I then used the knowledge on neuroevolution I had developed during the first phase to develop the NeuroEvolution.jl library based on Cambrian.jl, to implement standard neuroevolution algorithms and to profide a modular framework which will allow me to try novel neuroevolution algorithms in the coming months.
+
+\section*{Layout of this document}
+
+This document is a report on my internship, to showcase research work I have already conducted and will continue for the last months. Instead of making it a theoretical report on current research in this field, which is however comprised in the bibliography and summarized in the first chapters, I tried to describe my work and document the developments made notably on the Dota bot, BERL.jl, and NeuroEvolution.jl.
 
 In chapters \ref{chap:prolegomena} and \ref{chap:evo}, I will lay the bases of Reinforcement Learning, neuroevolution and evolutionary approaches as a first theoretical preamble. Chapter \ref{chap:dota} will describe the competition we entered aiming at developing an AI to play 1v1 games of Dota 2. In chapters \ref{chap:berl} and \ref{chap:neuroevo}, I will then introduce BERL.jl and NeuroEvolution.jl, two Julia libraries I developed to try and benchmark evolutionary RL algorithms. 
 Finally, chapter \ref{chap:results} will summarize results encountered so far and present the leads for future work in this internship.
