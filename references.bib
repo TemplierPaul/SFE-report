@@ -68,11 +68,13 @@
    url = {https://doi.org/10.1145/3321707.3321866},
    year = {2019},
 }
-@report{GRN,
-   abstract = {Over the past twenty years, artificial Gene Regulatory Networks (GRNs) have shown their capacity to solve real-world problems in various domains such as agent control, signal processing and artificial life experiments. They have also benefited from new evolutionary approaches and improvements to dynamic which have increased their optimization efficiency. In this paper, we present an additional step toward their usability in machine learning applications. We detail an GPU-based implementation of differentiable GRNs, allowing for local optimization of GRN architectures with stochastic gradient descent (SGD). Using a standard machine learning dataset, we evaluate the ways in which evolution and SGD can be combined to further GRN optimization. We compare these approaches with neural network models trained by SGD and with support vector machines.},
-   author = {D G Wilson and Kyle Harrington and Sylvain Cussat-Blanc and Hervé Luga},
-   title = {Evolving Differentiable Gene Regulatory Networks},
-   url = {https://github.com/d9w/pyGRN},
+@misc{GRN,
+    title={Evolving Differentiable Gene Regulatory Networks},
+    author={Dennis G Wilson and Kyle Harrington and Sylvain Cussat-Blanc and Hervé Luga},
+    year={2018},
+    eprint={1807.05948},
+    archivePrefix={arXiv},
+    primaryClass={cs.NE}
 }
 @report{HyperNEAT,
    abstract = {Research in neuroevolution, i.e. evolving artificial neural networks (ANNs) through evolutionary algorithms , is inspired by the evolution of biological brains. Because natural evolution discovered intelligent brains with billions of neurons and trillions of connections, perhaps neuroevolution can do the same. Yet while neuroevolution has produced successful results in a variety of domains, the scale of natural brains remains far beyond reach. This paper presents a method called Hypercube-based NeuroEvolution of Augmenting Topologies (HyperNEAT) that aims to narrow this gap. HyperNEAT employs an indirect encoding called connective Compositional Pattern Producing Networks (connective CPPNs) that can produce con-nectivity patterns with symmetries and repeating motifs by interpreting spatial patterns generated within a hypercube as connectivity patterns in a lower-dimensional space. The advantage of this approach is that it can exploit the geometry of the task by mapping its regularities onto the topology of the network, thereby shifting problem difficulty away from dimensionality to underlying problem structure. Furthermore, connective CPPNs can represent the same connectivity pattern at any resolution, allowing ANNs to scale to new numbers of inputs and outputs without further evolution. HyperNEAT is demonstrated through visual discrimination and food gathering tasks, including successful visual discrimination networks containing over eight million connections. The main conclusion is that the ability to explore the space of regular connectivity patterns opens up a new class of complex high-dimensional tasks to neuroevolution.},
@@ -374,3 +376,49 @@ series = {GECCO '19}
 }
 
 @ARTICLE{novelty-only,  author={J. {Lehman} and K. O. {Stanley}},  journal={Evolutionary Computation},   title={Abandoning Objectives: Evolution Through the Search for Novelty Alone},   year={2011},  volume={19},  number={2},  pages={189-223},}
+
+@inproceedings{tpg,
+  title     = {Emergent Tangled Program Graphs in Multi-Task Learning},
+  author    = {Stephen Kelly and Malcolm Heywood},
+  booktitle = {Proceedings of the Twenty-Seventh International Joint Conference on
+               Artificial Intelligence, {IJCAI-18}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},             
+  pages     = {5294--5298},
+  year      = {2018},
+  month     = {7},
+  doi       = {10.24963/ijcai.2018/740},
+  url       = {https://doi.org/10.24963/ijcai.2018/740},
+}
+
+@InProceedings{grammatical-evo,
+author = "Conor Ryan and J. J. Collins and Michael O'Neill",
+title = "Grammatical Evolution: Evolving Programs for an Arbitrary Language",
+booktitle = "Proceedings of the First European Workshop on Genetic Programming",
+year = "1998",
+editor = "Wolfgang Banzhaf and Riccardo Poli and Marc Schoenauer and Terence C. Fogarty",
+volume = "1391",
+series = "LNCS",
+pages = "83--96",
+address = "Paris",
+publisher_address = "Berlin",
+month = "14-15 " # apr,
+publisher = "Springer-Verlag",
+keywords = "genetic algorithms, genetic programming, grammatical evolution",
+ISBN = "3-540-64360-5",
+URL = "http://www.lania.mx/~ccoello/eurogp98.ps.gz",
+URL = "http://citeseer.ist.psu.edu/ryan98grammatical.html",
+DOI = "doi:10.1007/BFb0055930",
+size = "14 pages",
+abstract = "We describe a Genetic Algorithm that can evolve complete programs. Using a variable length linear genome to govern how a Backus Naur Form grammar definition is mapped to a program, expressions and programs of arbitrary complexity may be evolved. Other automatic programming methods are described, before our system, Grammatical Evolution, is applied to a symbolic regression problem.",
+notes = "EuroGP'98",
+affiliation = "University of Limerick Dept. Of Computer Science and Information Systems Ireland Ireland",
+}
+
+@misc{neuromodulation,
+    title={Neuromodulated Learning in Deep Neural Networks},
+    author={Dennis G Wilson and Sylvain Cussat-Blanc and Hervé Luga and Kyle Harrington},
+    year={2018},
+    eprint={1812.03365},
+    archivePrefix={arXiv},
+    primaryClass={cs.NE}
+}

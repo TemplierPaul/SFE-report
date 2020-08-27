@@ -7,13 +7,13 @@ Evolutionary Algorithms, and more globally Evolutionary Computation, are bio-ins
 
 Evolutionary algorithms are stochastic optimization methods that use a population of candidate solutions (or \textit{individuals}) to iteratively reach an optimal or quasi-optimal solution by selecting the fittest individuals at each generation. They can use mutation operators, which modify some characteristics of an individual, and crossover operators that create children sharing traits with 2 (or more) parents from the population, in a process described in figure \ref{fig:GA}.
 
-Evolutionary Algorithms can be characterized at different levels:
+Evolutionary Algorithms can be characterized at different levels, as seen in figure \ref{fig:GP-classes}:
 \begin{itemize}
-    \item \textbf{Problem}: Some algorithms can solve static problems like the Travelling Salesman Problem (TSP) while others optimize policies, for example investment strategies 
-    \item \textbf{Gene}: Based on biological genetics, genes are the basic blocks of the individual, each defining a parameter such as the value of an argument or a simple rule
+    \item \textbf{Problem}: Some algorithms can solve static problems like the Travelling Salesman Problem (TSP) while others optimize policies, for example investment strategies.
+    \item \textbf{Gene}: Based on biological genetics, genes are the basic blocks of the individual, each defining a parameter such as the value of an argument or a simple rule.
     \item \textbf{Genome}: This group of genes describes an individual 
     \item \textbf{Phenotype}: Once expressed, the genome creates the phenotype, for example a graph from a list of genes each defining the weight of a link between 2 nodes.
-    \item \textbf{Fitness function}: The fitness function evaluates how well the individual is adapted to the problem, e.g. by computing the mean error or any function designed to be maximized by the algorithm
+    \item \textbf{Fitness function}: The fitness function evaluates how well the individual is adapted to the problem, e.g. by computing the mean error or any function designed to be maximized by the algorithm.
 \end{itemize}
 
 \begin{figure}[H]
@@ -39,11 +39,14 @@ While Genetic Algorithms are optimization algorithms, Evolutionary Programming e
 
 These functions can be for example defined as graphs like Cartesian Genetic Programming \cite{CGP}, or as neural networks like NEAT \cite{NEAT_1}.
 
-In addition to previously shown features, individuals in Evolutionary Programming algorithms can be characterized by their behavior in an environment. We can hence look at \textbf{Genotype}, \textbf{Phenotype}, and \textbf{Behavior} for a mapping of individuals in a problem. Even though individuals may share similar genotypes of phenotypes, their behavior may differ due to the impact of the environment. 
+In addition to previously shown features, individuals in Evolutionary Programming algorithms can be characterized by their behavior in an environment. We can hence look at \textbf{Genotype}, \textbf{Phenotype}, and \textbf{Behavior} for a mapping of individuals in a problem. Even though individuals may share similar genotypes or phenotypes, their behaviors may differ due to the impact of the environment. 
 
 Optimizing functions to be used as policies through evolutionary algorithms is the field of Evolutionary Reinforcement Learning, as described in section \ref{sec:ERL}.
 
 \section{NeuroEvolution}
+
+Neuroevolution is the field which tries to evolve neural network, i.e. their weights and/or architecture, through evolutionary algorithms. Two main approaches have arisen to tackle this issue: directly encoding the network, and using a generator to create it indirectly.
+
 \subsection{Direct encoding}
 The first approach relies on directly encoding the final neural network, used to choose an action during the game, as an individual for the genetic algorithm. Each weight is therefore directly mutated by the algorithm.
 
@@ -63,7 +66,7 @@ CMA-ES is a population-based stochastic derivative-free method that creates new 
 \bigbreak
 
 \subsubsection{NEAT}
-Since the architecture of a neural network (e.g. number of layers, size of each layer, recurrent units) can have a strong impact on final performance, this technique evolves both network structure and neuron weights on the final network. The NeuroEvolution of Augmenting Topologies algorithm (NEAT) created in 2002 (\cite{NEAT_1, NEAT_2}) presents solutions to 3 fundamental issues in the evolution of neural networks:
+Since the architecture of a neural network (e.g. number of layers, size of each layer, recurrent units) can have a strong impact on final performance, this technique evolves simultaneously both network structure and neuron weights of the final network. The NeuroEvolution of Augmenting Topologies (NEAT) algorithm created in 2002 (\cite{NEAT_1, NEAT_2}) presents solutions to 3 fundamental issues in the evolution of neural networks:
 
 \begin{itemize}
     \item \textbf{Crossover between different structures}: NEAT provides a genotype-to-phenotype mapping based on mutations (Fig. \ref{NEAT}).
@@ -77,22 +80,20 @@ Multiple variants have been created from NEAT, including rtNEAT \cite{rtNEAT} fo
 \begin{figure}[H]
  \centering
  \captionsetup{justification=centering, margin=0.5cm}
- \includegraphics[width=7cm]{images/neat.png}
+ \includegraphics[width=14cm]{images/neat.png}
  \caption{\label{NEAT}NEAT genotype-to-phenotype mapping example. A genotype is depicted that produces the shown phenotype. There are 3 input nodes, one hidden, and one output node, and seven connection definitions, one of which is recurrent. \cite{NEAT_2}}
  \label{fig:NEAT}
 \end{figure}
 
-A deeper description of NEAT is introduced in chapter \ref{chap:neuroevo}.
+A more in-depth description of NEAT is introduced in chapter \ref{chap:neuroevo}.
 
 \subsection{Indirect encoding}
-Goal: reuse the same information multiple time, reduce the search space to a more efficient one
-Principle: encode the weights of a NN with an evolved program
 
-The second approach uses an intermediary program, optimized through an evolutionary algorithm, to generate the synaptic weights of the final neural network based on their positions. 
+The second approach uses an intermediary program, optimized through an evolutionary algorithm, to generate the synaptic weights of the final neural network based on their positions. This method reduces the search space to a more efficient one by reusing the same information multiple times, since the same program is used for each and every connection across the final network. 
 
-HyperNEAT \cite{HyperNEAT} uses a Compositional Pattern Producing Network (CPPN) \cite{CPPN} optimized through a NEAT-based process to create the final network. This allows the final network to be larger without increasing the size of the space to explore, since the same CPPN can be used on any number of neurons.
+HyperNEAT \cite{HyperNEAT} uses a Compositional Pattern Producing Network (CPPN) \cite{CPPN} optimized by a NEAT-based process to create the final network. This allows the final network to be larger without increasing the size of the space to explore, since the same CPPN can be used on any number of neurons.
 
-As Compositional Pattern Producing Networks implement multiple activation functions including Gaussian, sigmoid, and periodic functions, they can produce connectivity patterns with symmetries based on the positions of the neurons, better exploiting regularities in the task.
+As CPPNs implement multiple activation functions including Gaussian, sigmoid, and periodic functions, they can produce connectivity patterns in the final network with symmetries based on the positions of the neurons, better exploiting regularities in the task.
 
 \section{Quality Diversity approaches}
 

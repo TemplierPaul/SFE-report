@@ -1,12 +1,12 @@
 \chapter{Developping NeuroEvolution.jl}
 \label{chap:neuroevo}
 
-\addlink{https://github.com/TemplierPaul/NeuroEvolution.jl}{NeuroEvolution.jl} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NEuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is in progress to complete it. 
+\addlink{https://github.com/TemplierPaul/NeuroEvolution.jl}{NeuroEvolution.jl} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NeuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} (Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is planned to complete it. 
 
 The concepts powering the NEAT algorithm may seem relatively simple and clear as described in the literature, making it a quite elegant solution. \\
-However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it for an earlier \addlink{https://github.com/TemplierPaul/Genepy}{personal project},  and in the \addlink{https://github.com/d9w/NEAT.jl/tree/master/src}{NEAT agent} developed for the Breezy competition (cf chapter \ref{chap:dota}), helped design a more reliable structure and drastically reduced the development time.
+However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it during an earlier \addlink{https://github.com/TemplierPaul/Genepy}{personal project},  and in the \addlink{https://github.com/d9w/NEAT.jl/tree/master/src}{NEAT agent} developed for the Breezy competition (cf chapter \ref{chap:dota}) helped me design a more reliable structure and reduced the development time.
 
-This chapter aims at presenting the choices made during the design and development of NeuroEvolution.jl, its architecture and the main principles ruling it. 
+This chapter aims at presenting the original NEAT algorithm, both in the theory and in its implementation, and then explaining choices made during the design and development of NeuroEvolution.jl, its architecture, and the main principles ruling it. 
 
 \section{Original NEAT algorithm}
 \label{sec:og-neat}
@@ -15,16 +15,15 @@ The NEAT algorithm relies on 3 main solutions to neuroevolution issues:
 \begin{itemize}
     \item \textbf{Crossover between different structures}: NEAT provides a genotype-to-phenotype mapping based on mutations (Fig. \ref{fig:NEAT} in chapter \ref{chap:evo}).
     \item \textbf{Protection of topological innovation}: The speciation mechanism evaluates candidates by comparing them to similar architectures to allow new structures to mature without being instantly eliminated. 
-    \item \textbf{Minimization of structural complexity}: Nodes are added to a minimal initial structure in order to prevent networks from being too big without benefits.
+    \item \textbf{Minimization of structural complexity}: Nodes are added to a minimal initial structure in order to prevent networks from growing in size without benefits.
 \end{itemize}
 
 \subsection{Crossover and Mutation}
-% \todo{add mutation and crossover mechanisms + images}
 
 \subsubsection{Mutation}
-Additionally to weight mutation, NEAT relies on 2 types of structural mutations: adding connections, and adding nodes.
+Additionally to weight mutation, NEAT relies on 2 types of structural mutations: adding connections, and adding nodes (figure \ref{fig:neat-mut}).
 
-Adding a connection only requires creating a new gene between two neurons which were not previously linked. This new connection is assigned an incremented innovation number as a unique identifier across the whole population and all the generations.
+Adding a connection only requires creating a new gene between two neurons which were not previously linked. This new connection is assigned an incremented innovation number as a unique identifier across the whole population and all generations, which allows to track its existence in the NEAT run. 
 
 Adding a node requires splitting a connection into 2 new ones, by creating a new neuron and adding two new connections as two new genes. 
 
@@ -33,20 +32,20 @@ Adding a node requires splitting a connection into 2 new ones, by creating a new
 \captionsetup{justification=centering,margin=2cm}
 \includegraphics[width=10cm]{images/neat_mut.png}
 \caption{The two types of structural mutation in NEAT. Both types, adding a connection and adding a node, are illustrated with the genes above their phenotypes.  The top number in each genome is  the innovation number of that gene. New genes are assigned new increasingly higher innovation numbers. \cite{NEAT_2}}
- \label{NEAT_network}
+ \label{fig:neat-mut}
 \end{figure}
 
 \subsubsection{Crossover}
-NEAT crossover relies on the comparison of the two genomes based on the genes innovation numbers as unique identifiers. If both parents have a gene with the same innovation number (but possibly different weights), the algorithm selects one at random. If a gene only appears in one parent, it is selected if this parent has the better fitness.
+NEAT crossover relies on the comparison of the two genomes based on the genes innovation numbers as unique identifiers (figure \ref{fig:neat-cros}). If both parents have a gene with the same innovation number (but possibly different weights), the algorithm selects one at random. If a gene only appears in one parent, it is selected if this parent has the better fitness.
 
-In the case where multiple activation functions are possible, the dictionaries linking each neuron to its function in each parent are merged, giving the priority to the fittest parent when a neuron appears in both. 
+In the case where multiple activation functions are possible (e.g. in a CPPN) the dictionaries linking each neuron to its function in each parent are merged, giving the priority to the fittest parent when a neuron appears in both. 
 
 \begin{figure}[H]
 \centering
 \captionsetup{justification=centering,margin=2cm}
 \includegraphics[width=10cm]{images/neat_cros.png}
 \caption{NEAT crossover mechanism matching  up  genomes  for  different  network  topologies  using  innovation numbers.   Although  Parent 1  and  Parent 2  look  different,  their  innovation  numbers (shown at the top of each gene) tell us which genes match up with which. For matching genes, the one to keep is selected at random. \cite{NEAT_2}}
- \label{NEAT_network}
+ \label{fig:neat-cros}
 \end{figure}
 
 \subsubsection{Mutation power}
@@ -59,11 +58,9 @@ The $mutation\_power$ parameter implements a stronger mutation amplitude on the 
 The stolen children feature consists in removing a few offsprings from bad species and adding them to good ones, making the search more greedy. It is not part of the original paper, but has been described on the author's website and in his code.
 
 \subsubsection{Elitism}
+\label{subsec:elitism}
 Elitism is the mechanism keeping the best individuals (\textit{elites}) from a generation to the next one, ensuring the best solution is not lost once encountered. \\
-There is no elitism in the original implementation.
-
-\subsection{Hyperparameters}
-
+There is no elitism in the original implementation, although it has been added in the latest version of my library as an optional feature, for comparison purposes with CGP which uses it.
 
 \section{Implementing NEAT}
 I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \addlink{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{his website}. \\
@@ -202,6 +199,7 @@ Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/maste
 \end{minipage}
 
 \subsection{NEAT in a standard Genetic Algorithm}
+\label{sec:neat-ga}
 
 The goal of using Cambrian as a framework in this implementation also was to allow for a high compatibility with other algorithm so that the coding blocks defined for NEAT could be reused in classical evolutionary algorithms, from a Genetic Algorithm (GA) to a Quality-Diversity method as envisioned in the Breezy competition (cf chapter \ref{chap:dota}). 
 
@@ -267,6 +265,10 @@ The \code{build!} method creates the final network and sets its weighs with the 
 Using HyperNEAT requires a \addlink{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/cfg/hyperneat.yaml}{specific YAML file} which adds information about hidden layers and structure of the generated network to the standard NEAT parameters. 
 
 Although the default architecture for the final networks only links a layer of neurons to the previous one, toggling the \code{hn\_link\_all\_layers} parameter to \code{true} creates a connection between each layer and all the previous ones, for a more complex architecture. Using a CPPN for weights generation makes it possible to use such architecture without expanding the search space, contrary to direct encoding. 
+
+\section{Future developments}
+
+As NeuroEvolution.jl still seems to struggle on harder RL tasks in BERL compared to CGP, some additional features are planned for future development. This includes using the HyperNEAT CPPN to generate biases in the final network as well as connection weights, and adding stolen children to make the search more greedy or implementing mutation power, which have been described in the original code but not in the published work.
 
 %%% Local Variables: 
 %%% mode: latex

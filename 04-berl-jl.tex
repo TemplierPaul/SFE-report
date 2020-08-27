@@ -6,16 +6,17 @@
 
 \addlink{https://github.com/d9w/BERL.jl}{BERL.jl}, short for \textit{Benchmarking Evolutionary Reinforcement Learning}, is a benchmarking tool created by my supervisor Dennis Wilson to compare the performance of Evolutionary Reinforcement Learning algorithms on the same normalized tasks, for which I developed the architecture. 
 
-The code of BERL is voluntarily modular, to allow adding more environments and new algorithms to the comparison. Hence, it relies on 3 blocks: algorithm \addlink{https://github.com/d9w/BERL.jl/blob/master/src/algorithms/CGP/_setup.jl}{\code{\_setup} files}, \addlink{https://github.com/d9w/BERL.jl/blob/master/src/environments/BERL_env.jl}{\code{BERLenv} structures}, and \addlink{https://github.com/d9w/BERL.jl/blob/master/src/core.jl}{the \code{start\_berl} method} to link them.
+The code of BERL is voluntarily modular to allow adding more environments and new algorithms to the comparison. Hence, it relies on 3 blocks: algorithm \addlink{https://github.com/d9w/BERL.jl/blob/master/src/algorithms/CGP/_setup.jl}{\code{\_setup} files}, \addlink{https://github.com/d9w/BERL.jl/blob/master/src/environments/BERL_env.jl}{\code{BERLenv} structures}, and \addlink{https://github.com/d9w/BERL.jl/blob/master/src/core.jl}{the \code{start\_berl} method} to link them.
 
 \subsection{\code{\_setup} files}
 
-Each algorithm requires a \code{\_setup} Julia file that includes a function returning a \code{Cambrian.Evolution} object from a configuration dictionary and a fitness function, and a \code{process} function to evaluate the algorithm with a specific input. This allows to use all algorithms the same way in the rest of the code through an algorithm-agnostic interface. 
+Each algorithm requires a \code{\_setup} Julia file that includes a function returning a \\\code{Cambrian.Evolution} object from a configuration dictionary and a fitness function, and a \code{process} function to evaluate the algorithm with a specific input. This allows to use all algorithms the same way in the rest of the code through an algorithm-agnostic interface. 
 
+Additionally, each algorithm has multiple \addlink{https://github.com/d9w/BERL.jl/blob/master/src/algorithms/CGP/gym.yaml}{YAML files}, each defining the run parameters for an environment. The \code{\_setup} and YAML files are all stored in the same folder named after the algorithm.
 
 \subsection{\code{BERLenv} structure}
 
-In order to also present a homogeneous interface on the environments side, the \addlink{https://github.com/d9w/BERL.jl/blob/master/src/environments/BERL_env.jl}{\code{BERLenv}} abstract type is used to wrap each environment and make it interact with the same functions. For each benchmark, a \code{mutable struct} is created will all required elements inside, and the function building it is in charge of starting the simulator and setting the parameters.
+In order to also present a homogeneous interface on the environments side, the \addlink{https://github.com/d9w/BERL.jl/blob/master/src/environments/BERL_env.jl}{\code{BERLenv}} abstract type is used to wrap each environment and make them all interact with the same functions. For each benchmark, a \code{mutable struct} is created with all required elements inside, and the function building it is in charge of starting the simulator and setting the parameters.
 
 The \code{fitness} method takes a \code{Cambrian.Individual} and evaluates it, returning its fitness in this environment. Finally, the \code{new\_gen} method can be used to reset the environment between generations or to give it a new random seed, making it stochastic between generations but deterministic for all evaluations at the same step.
 
@@ -36,43 +37,45 @@ Source code at \url{https://github.com/d9w/BERL.jl/blob/master/src/environments/
 \end{minipage}
 
 
-\subsection{\code{start\_berlL}}
+\subsection{\code{start\_berl}}
 
 Finally, the \code{start\_berl} function can be used to run an algorithm in a specific environment, creating all elements and making them interact. 
 
-The \code{berl\_run} function can be used to run all wanted algorithms on the same set of benchmarks, as selected in the \addlink{https://github.com/d9w/BERL.jl/tree/master/run_config}{ configuration YAML files}. Each combination of an algorithm and an environment can be run multiple times in order to average the metrics, depending on the value of the \addlink{https://github.com/d9w/BERL.jl/blob/master/run_config/algorithms.yaml}{\code{runs}} parameters.
+The \code{berl\_run} function can be used to run all wanted algorithms on the same set of benchmarks, as selected in the \addlink{https://github.com/d9w/BERL.jl/tree/master/run_config}{ configuration YAML files}. Each combination of an algorithm and an environment can be run multiple times in order to average the metrics, depending on the value of the \addlink{https://github.com/d9w/BERL.jl/blob/master/run_config/algorithms.yaml}{\code{runs}} parameter.
 
 \section{Benchmark tasks}
-A few standard test environments have already been implemented into BERL in order to both provide a first benchmark, and to give an example of how to integrate RL environments into the architecture of the project. 
+A few standard test environments have already been implemented into BERL in order both to provide a first benchmark and to give an example of how to integrate RL environments into the architecture of the project. 
 
 Standard supervised learning tasks have also been added like the computation of \addlink{https://en.wikipedia.org/wiki/Exclusive_or}{XOR}, or classification in the \addlink{https://archive.ics.uci.edu/ml/datasets/iris}{Iris dataset}, to introduce easier tasks for testing purposes and to show more implementation examples.
 
 For Gym, Atari, and PyBullet, the specific environment can be chosen in the \addlink{https://github.com/d9w/BERL.jl/blob/master/run_config/environments.yaml}{YAML configuration file} but other run parameters will be the same, as defined in the \addlink{https://github.com/d9w/BERL.jl/blob/master/src/algorithms/CGP/gym.yaml}{YAML file for each algorithm}.
 
 \subsection{Gym and PyBullet}
-\addlink{http://gym.openai.com/}{Gym} is a toolkit developed by OpenAI to help in the development and testing of reinforcement learning algorithm. It implements a unified API to interact with various environments, from \addlink{https://gym.openai.com/envs/CartPole-v0/}{CartPole's pandulum balancing} to \addlink{http://gym.openai.com/envs/Ant-v2/}{Ant's four-legged walk}.
+\addlink{http://gym.openai.com/}{Gym} is a toolkit developed by OpenAI to help in the development and testing of reinforcement learning algorithm. It implements a unified API to interact with various environments, from \addlink{https://gym.openai.com/envs/CartPole-v0/}{CartPole's pandulum balancing} to \addlink{http://gym.openai.com/envs/Ant-v2/}{Ant's four-legged walk} (figure \ref{fig:gym}).
 
 \begin{figure}[H]
  \centering
  \captionsetup{justification=centering, margin=0.5cm}
 \includegraphics[height=6cm]{images/cartpole.PNG}
 \includegraphics[height=6cm]{images/ant.PNG}
-\caption{Cartpole and Ant environments}
+\caption{Cartpole (left) and Ant (right) environments in Gym}
  \small\textsuperscript{\url{https://gym.openai.com/envs/CartPole-v1/} and  \url{http://gym.openai.com/envs/Ant-v2/}}
- \label{fig:cartpole}
+ \label{fig:gym}
 \end{figure}
 
 \subsection{Atari RAM}
 
-Through Gym and the Arcade Learning Environment (ALE, \cite{Atari}), RL algorithms can be trained to play \addlink{https://gym.openai.com/envs/#atari}{Atari games}. While many state-of-the-art reinforcement learning focused frame-based interaction with the game, requiring GPU computation to process the images through convolutional network, the RAM-base Atari environments have been chosen for BERL to reduce training costs and length while still provinding a complex environment. Algorithms benchmarked through BERL hence have to focus more on the gameplay than on the image recognition. 
+Through Gym and the Arcade Learning Environment (ALE, \cite{Atari}), RL algorithms can be trained to play \addlink{https://gym.openai.com/envs/#atari}{Atari games}. While many state-of-the-art reinforcement learning focus on frame-based interaction with the game, requiring GPU computation to process the images through convolutional network, the RAM-based Atari environments have been chosen for BERL to reduce training costs and length while still providing complex learning environments. Algorithms benchmarked through BERL hence have to focus more on gameplay than on image processing. 
 
 \section{Algorithms whishlist}
 
-BERL aims at regrouping all state-of-the-art evolutionary RL algorithms in order to compare them. As such, the list of future 
+BERL aims at regrouping all state-of-the-art evolutionary RL algorithms in order to compare them. As such, the list of modules we wish to benchmark is still to be completed, but CGP, NEAT and HyperNEAt have already been added. Future development may include Artificial Gene Regulatory Networks \cite{GRN}, Tangled Program Graphs \cite{tpg} or Grammatical Evolution \cite{grammatical-evo}.
 
 \subsection{CGP}
 
 The first algorithm added into BERL is Cartesian Genetic Programming, which was proven efficient on Atari game-playing \cite{CGP}. The \addlink{https://github.com/d9w/CartesianGeneticProgramming.jl}{Julia implementation} used is hence based on Cambrian and was developed by Dennis Wilson. 
+
+The run parameters are based on the CGP parameters used on similar problems. 
 
 \subsection{Neuroevolution algorithms}
 

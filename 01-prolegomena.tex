@@ -40,15 +40,15 @@ It can be defined as:
     \label{fig:my_label}
 \end{figure}
 
-A (deterministic) \textbf{policy} $\pi$ is a mapping from states to actions. $\pi: S \longrightarrow A$
+A (deterministic) \textbf{policy} $\pi$ is a mapping from states to actions. $\pi: S \longrightarrow A$.
 
 The goal of \textbf{Reinforcement Learning} is to find the optimal policy $\pi^*$ that maximizes the expected sum of rewards across an experiment. 
 
 \section{Neural Networks acting as a policy}
 
-As neural networks \cite{perceptron} can - in theory - approximate any function, they can be used as to define a policy mapping any state to an action. The \textbf{Direct Policy search} approach aims at finding the best policy through the optimization of the parameters of this policy network.
+As neural networks \cite{perceptron} can - in theory - approximate any function, they can be used to define a policy mapping any state to an action. The \textbf{Direct Policy search} approach aims at finding the best policy through the optimization of the parameters of this policy network.
 
-In this method, the network is optimized to output the best action to take from a state as input. Two optimization methods can be employed: gradient-based, or stochastic.
+In this method, the network is optimized to output the best action to take, from a state given as input. Two optimization methods can be employed: gradient-based, or stochastic.
 
 \subsection{Gradient-based optimization}
 
@@ -69,16 +69,16 @@ Hence, optimizations methods not based on gradient such as evolutionary methods 
 \subsection{Evolutionary Reinforcement Learning}
 \label{sec:ERL}
 
-\textbf{Evolutionary Reinforcement Learning} (or \textit{ERL}) is the RL approach based on using stochastic optimization, and more precisely evolutionary algorithms, to optimize a policy network without relying on gradient. Some of these algorithms are described in chapter \ref{chap:evo}.
+\textbf{Evolutionary Reinforcement Learning} (or \textit{ERL}) is the RL approach based on using stochastic optimization, and more precisely evolutionary algorithms, to optimize a policy network without computing the gradient. Some of the evolutionary algorithms ERL can use are described in chapter \ref{chap:evo}.
 
-As the ERL field is still lacking a tool to compare and benchmark algorithms, we have taken part in a Dota 2 ERL competition and are working on a benchmarking framework, as described in chapters \ref{chap:dota} and \ref{chap:berl}.
+As the ERL field is still lacking a tool to compare and benchmark algorithms, I took part in a Dota 2 ERL competition and I am currently working on a benchmarking framework, as described in chapters. \ref{chap:dota} and \ref{chap:berl}.
 
 \section{Development tools}
 \subsection{Julia}
     
-\addlink{https://julialang.org/}{\textbf{Julia}} is a high-level, dynamic programming language designed for high-performance with a just-in-time compiler. It is notably interoperable with multiple languages, including C, Fortran, Python, R, MATLAB, Java, or Scala. \cite{julia-lang}
+\addlink{https://julialang.org/}{\textbf{Julia}} is a high-level, dynamic programming language designed for high performance with a just-in-time compiler. It is notably interoperable with multiple languages, including C, Fortran, Python, R, MATLAB, Java, or Scala. \cite{julia-lang}
 
-We used Julia in this project to provide a faster environment than Python, while still being compatible with state-of-the-art Python libraries such as gym or Atari.
+I used Julia in this project to provide a faster environment than Python, while still being compatible with state-of-the-art Python libraries such as gym or Atari.
 \\
 
 The principles of \textbf{Test-Driven Development} were followed: requirements are first translated into tests, then the code is developed until all tests pass. Tests provide both a way to ensure new code doesn't break previously working code, and a list of use cases of the library, hence improving its documentation.
