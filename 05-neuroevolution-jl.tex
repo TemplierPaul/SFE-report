@@ -1,10 +1,9 @@
-\chapter{Developping NeuroEvolution.jl}
+\chapter{NeuroEvolution.jl}
 \label{chap:neuroevo}
 
-\addlink{https://github.com/TemplierPaul/NeuroEvolution.jl}{NeuroEvolution.jl} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NeuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} (Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMAES} (Covariance matrix adaptation evolution strategy) is planned to complete it. 
+\addlink{https://github.com/TemplierPaul/NeuroEvolution.jl}{NeuroEvolution.jl} is a Julia library I developed to implement multiple neuroevolution algorithms for BERL. It includes \textbf{NEAT} (NeuroEvolution of Augmenting Topologies) and \textbf{HyperNEAT} (Hypercube-based NEAT), and an implementation of a direct weights optimization in a fix network using \textbf{CMA-ES} (Covariance matrix adaptation evolution strategy) is planned to complete it. 
 
-The concepts powering the NEAT algorithm may seem relatively simple and clear as described in the literature, making it a quite elegant solution. \\
-However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it during an earlier \addlink{https://github.com/TemplierPaul/Genepy}{personal project},  and in the \addlink{https://github.com/d9w/NEAT.jl/tree/master/src}{NEAT agent} developed for the Breezy competition (cf chapter \ref{chap:dota}) helped me design a more reliable structure and reduced the development time.
+The concepts powering the NEAT algorithm may seem relatively simple and clear as described in the literature, making it a quite elegant solution. However, its implementation raises multiple complex issues, turning out to be rather intricate. The obstacles met when implementing part of it during an earlier \addlink{https://github.com/TemplierPaul/Genepy}{personal project},  and in the \addlink{https://github.com/d9w/NEAT.jl}{NEAT agent} developed for the Breezy competition (cf chapter \ref{chap:dota}) helped me design a more reliable structure and reduced the development time.
 
 This chapter aims at presenting the original NEAT algorithm, both in the theory and in its implementation, and then explaining choices made during the design and development of NeuroEvolution.jl, its architecture, and the main principles ruling it. 
 
@@ -59,18 +58,16 @@ The stolen children feature consists in removing a few offsprings from bad speci
 
 \subsubsection{Elitism}
 \label{subsec:elitism}
-Elitism is the mechanism keeping the best individuals (\textit{elites}) from a generation to the next one, ensuring the best solution is not lost once encountered. \\
-There is no elitism in the original implementation, although it has been added in the latest version of my library as an optional feature, for comparison purposes with CGP which uses it.
+Elitism is the mechanism keeping the best individuals (\textit{elites}) from a generation to the next one, ensuring the best solution is not lost once encountered. There is no elitism in the original implementation, although it has been added in the latest version of my library as an optional feature, for comparison purposes with CGP which uses it.
 
 \section{Implementing NEAT}
-I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \addlink{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{his website}. \\
-The \addlink{https://github.com/FernandoTorres/NEAT}{reorganized version} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
+I developed the NEAT algorithm based on the original papers \cite{NEAT_1} and \cite{NEAT_2}, taking into account the remarks and indications of the author on \addlink{https://www.cs.ucf.edu/~kstanley/neat.html#FAQ2}{his website}. The \addlink{https://github.com/FernandoTorres/NEAT}{reorganized version} of the original C++ implementation of NEAT also provided insight into the algorithm, although some parts were approached differently, taking the papers as reference.
 
 \subsection{NEAT Individual}
 
-Based on Cambrian.jl, NeuroEvolution.jl uses an abstract type \code{NEATIndiv} from which the structure \code{NEATIndividual} inherits. This allows to build new NEAT-like individuals using the same methods with additional features, like HyperNEAT which relies on the NEAT algorithm for evolution, but integrates a different evaluation procedure. \code{NEATIndiv} inherits from \code{Cambrian.Individual} to use Cambrian's architecture.
+Based on \code{Cambrian.jl}, \code{NeuroEvolution.jl} uses an abstract type \code{NEATIndiv} from which the structure \code{NEATIndividual} inherits. This allows to build new NEAT-like individuals using the same methods with additional features, like HyperNEAT which relies on the NEAT algorithm for evolution, but integrates a different evaluation procedure. \code{NEATIndiv} inherits from \code{Cambrian.Individual} to use Cambrian's architecture.
 
-A \code{NEATIndividual} object contains a dictionary mapping an innovation number to a gene, which represents a connection between two neurons, a list of neurons defined by their positions, a dictionary mapping each neuron position to the activation function of the corresponding neuron, a \code{Network} object containing the neural network built from the genome, and a list of the fitness of the individual as required by Cambrian.
+A \code{NEATIndividual} object contains a dictionary mapping an innovation number to a gene, which represents a connection between two neurons, a list of neurons defined by their positions, a dictionary mapping each neuron position to the activation function of the corresponding neuron, a \code{Network} object containing the neural network built from the genome, and a list of the fitness of the individual as required by \code{Cambrian.jl}.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Julia, caption=NEAT Individual]
@@ -79,13 +76,15 @@ abstract type NEATIndiv <: Cambrian.Individual end
 mutable struct NEATIndividual <: NEATIndiv
     genes::Dict
     fitness::Array{Float64}
-    neuron\_pos::Array{Float64}
+    neuron_pos::Array{Float64}
     network::Network
-    activ\_functions::Dict
+    activ_functions::Dict
 end
 \end{lstlisting}
 Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/individual.jl}\\
 \end{minipage}
+
+%DGW: code question: what's the point of NEATIndiv? Why doesn't NEATIndividual inherit from Cambrian.Individual?
 
 \subsection{Neuron position and Execution order}
 \label{subsec:NEAT_neur_pos}
@@ -204,19 +203,6 @@ Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/maste
 The goal of using Cambrian as a framework in this implementation also was to allow for a high compatibility with other algorithm so that the coding blocks defined for NEAT could be reused in classical evolutionary algorithms, from a Genetic Algorithm (GA) to a Quality-Diversity method as envisioned in the Breezy competition (cf chapter \ref{chap:dota}). 
 
 Hence, I finally implemented a simple wrapper to use the NEAT Individual and its mutation and crossover operators in a standard Genetic Algorithm, ignoring the specific species-based populate function for the standard Cambrian \code{ga\_populate} function.
-
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language=Julia, caption=Genetic Algorithm populate for NEAT]
-function neat\_ga\_populate!(e::Evolution)
-    mut::Function=i::NEATIndiv -> 
-                    NeuroEvolution.mutate(i, e.cfg)
-    cross::Function=(p1, p2) -> 
-                    NeuroEvolution.crossover(p1, p2, e.cfg)
-    Cambrian.ga\_populate!(e, mutation=mut, crossover=cross)
-end
-\end{lstlisting}
-Source code at \url{https://github.com/TemplierPaul/NeuroEvolution.jl/blob/master/src/evolution.jl}\\
-\end{minipage}
 
 This compatibility with other Cambrian algorithms allows to easily use the NEAT individual in other settings such as Quality-Diversity methods or open-ended evolution, thus helping in new algorithms research.
 

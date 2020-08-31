@@ -9,27 +9,43 @@
     primaryClass={cs.NE}
 }
 
-
-@report{NEAT_2,
-   abstract = {An important question in neuroevolution is how to gain an advantage from evolving neural network topologies along with weights. We present a method, NeuroEvolu-tion of Augmenting Topologies (NEAT), which outperforms the best fixed-topology method on a challenging benchmark reinforcement learning task. We claim that the increased efficiency is due to (1) employing a principled method of crossover of different topologies, (2) protecting structural innovation using speciation, and (3) incremen-tally growing from minimal structure. We test this claim through a series of ablation studies that demonstrate that each component is necessary to the system as a whole and to each other. What results is significantly faster learning. NEAT is also an important contribution to GAs because it shows how it is possible for evolution to both optimize and complexify solutions simultaneously, offering the possibility of evolving increasingly complex solutions over generations, and strengthening the analogy with biological evolution.},
-   author = {Kenneth O Stanley and Risto Miikkulainen},
-   keywords = {Genetic algorithms,competing conventions,network topologies,neural networks,neuroevolution,speciation},
-   title = {Evolving Neural Networks through Augmenting Topologies},
-   url = {http://mitpress.mit.edu/e-mail},
+@article{ha2017evolving,
+  title   = "Evolving Stable Strategies",
+  author  = "Ha, David",
+  journal = "blog.otoro.net",
+  year    = "2017",
+  url     = "http://blog.otoro.net/2017/11/12/evolving-stable-strategies/"
 }
+
+@inproceedings{NEAT_1,
+  title={Efficient evolution of neural network topologies},
+  author={Stanley, Kenneth O and Miikkulainen, Risto},
+  booktitle={Proceedings of the 2002 Congress on Evolutionary Computation. CEC'02 (Cat. No. 02TH8600)},
+  volume={2},
+  pages={1757--1762},
+  year={2002},
+  organization={IEEE}
+}
+
+@article{NEAT_2,
+  title={Evolving neural networks through augmenting topologies},
+  author={Stanley, Kenneth O and Miikkulainen, Risto},
+  journal={Evolutionary computation},
+  volume={10},
+  number={2},
+  pages={99--127},
+  year={2002},
+  publisher={MIT Press}
+}
+
 @article{CMAES-Atari,
-   abstract = {We explore the use of Evolution Strategies (ES), a class of black box optimization algorithms, as an alternative to popular MDP-based RL techniques such as Q-learning and Policy Gradients. Experiments on MuJoCo and Atari show that ES is a viable solution strategy that scales extremely well with the number of CPUs available: By using a novel communication strategy based on common random numbers, our ES implementation only needs to communicate scalars, making it possible to scale to over a thousand parallel workers. This allows us to solve 3D humanoid walking in 10 minutes and obtain competitive results on most Atari games after one hour of training. In addition, we highlight several advantages of ES as a black box optimization technique: it is invariant to action frequency and delayed rewards, tolerant of extremely long horizons, and does not need temporal discounting or value function approximation.},
    author = {Tim Salimans and Jonathan Ho and Xi Chen and Szymon Sidor and Ilya Sutskever},
    month = {3},
    title = {Evolution Strategies as a Scalable Alternative to Reinforcement Learning},
    url = {http://arxiv.org/abs/1703.03864},
    year = {2017},
 }
-@report{NEAT_1,
-   abstract = {Neuroevolution, i.e. evolving artificial neural networks with genetic algorithms, has been highly effective in reinforcement learning tasks, particularly those with hidden state information. An important question in neuraevolu-tion is how to gain an advantage from evolving neural network topologies along with weights. We present a method, NeuroEvolution of Augmenting Topologies (NEAT) that outperforms the best fixed-topology methods on a challenging benchmark reinforcement learning task. We claim that the increased efficiency is due to (1) employing a principled method of crossover of different topologies, (2) protecting structural innovation using speciation, and (3) incremen-tally growing from minimal structure. We test this claim through a series of ablation studies that demonstrate that each component is necessary to the system as a whole and to each other. What results is significantly faster learning. NEAT is also an important contribution to GAS because it shows how it is possible for evolution to both optimize and complexify solutions simultaneously, making it possible to evolve increasingly complex solutions over time, thereby strengthening the analogy with biological evolution.},
-   author = {Kenneth 0 Stanley and Risto Miikkulainen},
-   title = {Efficient Evolution of Neural Network Topologies},
-}
+
 @report{rtNEAT,
    abstract = {In most modern video games, character behavior is scripted; no matter how many times the player exploits a weakness, that weakness is never repaired. Yet if game characters could learn through interacting with the player, behavior could improve as the game is played, keeping it interesting. This paper introduces the real-time NeuroEvolution of Augmenting Topologies (rtNEAT) method for evolving increasingly complex artificial neural networks in real time, as a game is being played. The rtNEAT method allows agents to change and improve during the game. In fact, rtNEAT makes possible an entirely new genre of video games in which the player trains a team of agents through a series of customized exercises. To demonstrate this concept, the NeuroEvolving Robotic Operatives (NERO) game was built based on rtNEAT. In NERO, the player trains a team of virtual robots for combat against other players' teams. This paper describes results from this novel application of machine learning, and demonstrates that rtNEAT makes possible video games like NERO where agents evolve and adapt in real time. In the future, rtNEAT may allow new kinds of educational and training applications through interactive and adapting games.},
    author = {Kenneth O Stanley and Bobby D Bryant and Risto Miikkulainen},
@@ -88,11 +104,11 @@
    year = {2009},
 }
 
-@report{CMAES_DL,
-   abstract = {Hyperparameters of deep neural networks are often optimized by grid search, random search or Bayesian optimization. As an alternative, we propose to use the Co-variance Matrix Adaptation Evolution Strategy (CMA-ES), which is known for its state-of-the-art performance in derivative-free optimization. CMA-ES has some useful invariance properties and is friendly to parallel evaluations of solutions. We provide a toy example comparing CMA-ES and state-of-the-art Bayesian optimization algorithms for tuning the hyperparameters of a convolutional neural network for the MNIST dataset on 30 GPUs in parallel. Hyperparameters of deep neural networks (DNNs) are often optimized by grid search, random search (Bergstra & Bengio, 2012) or Bayesian optimization (Snoek et al., 2012a; 2015). For the optimization of continuous hyperparameters, Bayesian optimization based on Gaussian processes (Ras-mussen & Williams, 2006) is known as the most effective method. While for joint structure search and hyperparameter optimization, tree-based Bayesian optimization methods (Hutter et al., 2011; Bergstra et al., 2011) are known to perform better (Bergstra et al.; Eggensperger et al., 2013; Domhan et al., 2015), here we focus on continuous optimization. We note that integer parameters with rather wide ranges (e.g., number of filters) can, in practice, be considered to behave like continuous hyper-parameters. As the evaluation of a DNN hyperparameter setting requires fitting a model and evaluating its performance on validation data, this process can be very expensive, which often renders sequential hyperparameter optimization on a single computing unit infeasible. Unfortunately, Bayesian optimization is sequential by nature: while a certain level of parallelization is easy to achieve by conditioning decisions on expectations over multiple hallucinated performance values for currently running hyperparameter evaluations (Snoek et al., 2012a) or by evaluating the optima of multiple acquisition functions concurrently (Hutter et al., 2012; Chevalier & Ginsbourger, 2013; Desautels et al., 2014), perfect parallelization appears difficult to achieve since the decisions in each step depend on all data points gathered so far. Here, we study the use of a different type of derivative-free continuous optimization method where parallelism is allowed by design. The Covariance Matrix Adaptation Evolution Strategy (CMA-ES (Hansen & Ostermeier, 2001)) is a state-of-the-art optimizer for continuous black-box functions. While Bayesian optimization methods often perform best for small function evaluation budgets (e.g., below 10 times the number of hyperparameters being optimized), CMA-ES tends to perform best for larger function evaluation budgets; for example, Loshchilov et al. (2013) showed that CMA-ES performed best among more than 100 classic and modern optimizers on a wide range of blackbox functions. CMA-ES has also been used for hyperparameter tuning before, e.g., for tuning its own Ranking SVM surrogate models (Loshchilov et al.},
-   author = {Ilya Loshchilov and Frank Hutter},
-   title = {CMA-ES FOR HYPERPARAMETER OPTIMIZATION OF DEEP NEURAL NETWORKS},
-   url = {https://sites.google.com/site/cmaesfordnn/},
+@article{CMAES-DL,
+  title={CMA-ES for hyperparameter optimization of deep neural networks},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={arXiv preprint arXiv:1604.07269},
+  year={2016}
 }
 
 @article{CPPN,
@@ -421,4 +437,39 @@ affiliation = "University of Limerick Dept. Of Computer Science and Information 
     eprint={1812.03365},
     archivePrefix={arXiv},
     primaryClass={cs.NE}
+}
+
+@misc{ wiki:cmaes,
+    author = "{Wikipedia contributors}",
+    title = "CMA-ES --- {Wikipedia}{,} The Free Encyclopedia",
+    year = "2020",
+    howpublished = "\url{https://en.wikipedia.org/w/index.php?title=CMA-ES&oldid=967047119}",
+    note = "[Online; accessed 20-August-2020]"
+  }
+  
+  @misc{ wiki:dota,
+    author = "{Wikipedia contributors}",
+    title = "Dota 2 --- {Wikipedia}{,} The Free Encyclopedia",
+    year = "2020",
+    howpublished = "\url{https://en.wikipedia.org/w/index.php?title=Dota_2&oldid=966599163}",
+    note = "[Online; accessed 20-August-2020]"
+  }
+  
+@article{ann-graph,
+    author = {Bre, Facundo and Gimenez, Juan and Fachinotti, Víctor},
+    year = {2017},
+    month = {11},
+    pages = {},
+    title = {Prediction of wind pressure coefficients on building surfaces using Artificial Neural Networks},
+    volume = {158},
+    journal = {Energy and Buildings},
+    doi = {10.1016/j.enbuild.2017.11.045}
+}
+
+@inproceedings{GP-benchmark,
+  title={Genetic programming needs better benchmarks},
+  author={McDermott, James and White, David R and Luke, Sean and Manzoni, Luca and Castelli, Mauro and Vanneschi, Leonardo and Jaskowski, Wojciech and Krawiec, Krzysztof and Harper, Robin and De Jong, Kenneth and others},
+  booktitle={Proceedings of the 14th annual conference on Genetic and evolutionary computation},
+  pages={791--798},
+  year={2012}
 }

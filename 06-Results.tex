@@ -8,9 +8,10 @@ Although BERL is still in development and NeuroEvolution.jl is being tuned to re
 \begin{figure}[H]
 \centering
 \captionsetup{justification=centering,margin=2cm}
-\includegraphics[height=8cm]{images/neat_antbullet.PNG}
+\includegraphics[height=10cm]{images/neat_antbullet.PNG}
 \caption{NEAT run on an AntBullet environment: evolution of max fitness wrt the number of evaluations}
 \end{figure}
+% DGW: make this graph wider
 
 A first experiment of NEAT on an AntBullet environment shows the algorithm learns and its maximum fitness improves, although it quickly stagnates as the best solutions seem to be forgotten between generations. This observation led to the implementation of elitism (cf section \ref{subsec:elitism}) to see if it improves performance in future experiments.
 
@@ -31,7 +32,7 @@ Although the environment is stochastic, hence harder to learn, CGP finally reach
 
 \section{Future work}
 
-In the second part of this internship, I will keep developing NeuroEvolution.jl (\textit{NE.jl}) and BERL jointly in order both to provide more stable and efficient tools, and to use them as a platform to design, implement and benchmark new algorithms. 
+In the second part of this internship, I will keep developing \code{NeuroEvolution.jl} and \code{BERL.jl} jointly in order both to provide more stable and efficient tools, and to use them as a platform to design, implement and benchmark new algorithms. 
 
 In this regard, the following points are currently forecast to be essential components of my research work in the next months:
 \begin{itemize}
@@ -42,6 +43,8 @@ In this regard, the following points are currently forecast to be essential comp
     \item Introduction of other evolutionary algorithmic mechanisms such as coevolution or Quality-Diversity in the NEAT structure
     \item Addition of gradient-based methods for weights optimization in a neuroevolution architecture
 \end{itemize}
+% DGW: expand this list as a paragraph
+
 
 %%% Local Variables: 
 %%% mode: latex
